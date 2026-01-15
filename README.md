@@ -1,245 +1,203 @@
-# File Processor - PRocesamiento de Archivos en Elixir
+# File Processor - File Processing in Elixir 
 
-# Descripción
+# Description
 
-En este proyecto se implementa un sistema de procesamiento de archivos en elixir el cual es capaz de analizar 
-archivos con extensión .csv, .json y .log, de los cuales se extraen métricas relevantes de cada uno de ellos y generar reportes correspondientes en texto plano
+In this project, a file processing system is implemented in Elixir which is capable of analyzing  
+files with extensions .csv, .json, and .log, from which relevant metrics are extracted from each one and corresponding reports are generated in plain text.
 
-Este sistema se puede utilizar tanto para procesamiento secuencial como paralelo lo cual nos permite comparar el rendimiento entre uno y otro 
+This system can be used for both sequential and parallel processing, which allows us to compare the performance between one and the other.
 
-Además, el proyecto incluye un ejecutable, por lo que ya no es necesario abrir iex para ejecutar las funciones.
+Additionally, the project includes an executable, so it is no longer necessary to open iex to execute the functions.
 
-# Ejecución
+# Execution
 
-## Usando IEx (Opcional)
+## Using IEx (Optional)
 
-Este proyecto se puede ejecutar directamente desde iex accediendo a la carpeta del proyecto y ejecutando el comando
+This project can be executed directly from iex by accessing the project folder and running the command
 
 iex -S mix
 
-Ejemplo:
+Example:  
 ~/file_processor$ iex -S mix
 
-## Usando el ejecutable (Recomendado)
+## Using the executable (Recommended)
 
-Además el proyecto puede ser ejecutado directamente desde la consola de comandos con la siguiente estructura
+Additionally, the project can be executed directly from the command line console with the following structure
 
 ./file_processor <function> <arguments>
 
-<function>: es la función la cual se quiere llamar del módulo FileProcessor (process_secuential, process_parallel, benchmark) 
+<function>: is the function that you want to call from the FileProcessor module (process_secuential, process_parallel, benchmark) 
 
-<argumentos>: Ruta al archivo, lista de archivos o directorio a procesar. Usa comillas si hay espacios en las rutas.
+<arguments>: Path to the file, list of files, or directory to be processed. Use quotes if there are spaces in the paths.
 
 
-# Uso
+# Usage
 
-## Uso con el comando iex -S mix
+## Usage with the iex -S mix command
 
-Una vez iniciado el proyecto con el comando (iex -S mix) se puede hacer uso del modulo "FileProcessor" para procesar uno o varios archivos o un directorio completo 
+Once the project has started with the command (iex -S mix), you can make use of the "FileProcessor" module to process one or multiple files or an entire directory.
 
-  ### Procesamiento Secuencial
-  
-  Para poder procesar uno o varios archivos o un directorio de manera secuencial se podrá hacer usa de la función "process_secuential/1" de la siguiente manera:
+### Sequential Processing
 
-    Para procesar un solo archivo:
-    FileProcessor.process_secuential("data/valid/ventas_enero.csv")
+To process one or more files or a directory sequentially, the "process_secuential/1" function can be used as follows:
 
-    Para procesar varios archivos:
-    archivos = ["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]
-    FileProcessor.process_secuential(archivos)
+To process a single file:  
+FileProcessor.process_secuential("data/valid/ventas_enero.csv")
 
-    Para procesar un directorio completo:
-    FileProcessor.process_secuential("data/valid")
-  
-  El procesamiento secuencial procesa y analiza los archivos uno por uno
+To process multiple files:  
+archivos = ["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]  
+FileProcessor.process_secuential(archivos)
 
-  ### Procesamiento Paralelo
+To process an entire directory:  
+FileProcessor.process_secuential("data/valid")
 
-  Para poder procesar varios archivos o un directorio completo de manera paralela se podrá hacer uso de la funcion "FileProcessor.process_parallel/1" de la siguiente manera:
+Sequential processing processes and analyzes files one by one.
 
-    Para procesar varios archivos:
-    archivos = ["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]
-    FileProcessor.process_parallel(archivos)
+### Parallel Processing
 
-    Para procesar un directorio completo:
-    FileProcessor.process_parallel("data/valid")
+To process multiple files or an entire directory in parallel, the "FileProcessor.process_parallel/1" function can be used as follows:
 
-  El procesamiento paralelo crea múltiples procesos haciendo uso de Task.async/1 lo cual nos permite que varios archivos se ejecuten de manera concurrente
+To process multiple files:  
+archivos = ["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]  
+FileProcessor.process_parallel(archivos)
 
-  Durante el procesamiento paralelo se muestra un indicador de progreso indicando cuantos archivos han sido procesados
+To process an entire directory:  
+FileProcessor.process_parallel("data/valid")
 
-Cada archivo procesado ya sea de manera secuencial o paralela devuelve un resultado (tupla) con la siguiente estructura:
+Parallel processing creates multiple processes using Task.async/1, which allows multiple files to be executed concurrently.
 
-{:ok, :extension_del_archivo procesado} : En caso que se haya procesado correctamente
+During parallel processing, a progress indicator is shown indicating how many files have been processed.
 
-{:error, reason} : En caso que no se haya podido procesar el archivo o directorio
+Each processed file, whether sequentially or in parallel, returns a result (tuple) with the following structure:
 
-Para el caso del procesamiento paralelo, los resultados se recolectan una vez que todos los procesos han terminado su ejecución
+{:ok, :processed_file_extension} : In case it was processed successfully
 
-## Uso con el ejecutable
+{:error, reason} : In case the file or directory could not be processed
 
-### Procesamiento secuencial
+For parallel processing, the results are collected once all processes have finished execution.
 
-Procesamiento secuencial de un solo archivo:
+## Usage with the executable
+
+### Sequential processing
+
+Sequential processing of a single file:  
 ./file_processor process_secuential "data/valid/ventas_enero.csv"
 
-Procesamiento secuencial de varios archivos:
+Sequential processing of multiple files:  
 ./file_processor process_secuential '["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]'
 
-Procesamiento secuencial de un directorio completo:
+Sequential processing of an entire directory:  
 ./file_processor process_secuential "data/valid"
 
-### Procesamiento Paralelo
+### Parallel Processing
 
-Procesamiento paralelo de varios archivos:
+Parallel processing of multiple files:  
 ./file_processor process_parallel '["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]'
 
-Procesamiento paralelo de un directorio completo:
+Parallel processing of an entire directory:  
 ./file_processor process_parallel "data/valid"
 
 ### Benchmark
 
-Benchmark: comparación de tiempos secuencial vs paralelo:
+Benchmark: comparison of sequential vs parallel execution times:  
 ./file_processor benchmark "data/valid"
 
 
-Todas las rutas son relativas a la ubicación del ejecutable.
+All paths are relative to the location of the executable.
 
 
 
 
-# Explicacion de deciciones de diseño
+# Explanation of design decisions
 
-  ## Estructura del proyecto
+## Project structure
 
-  El proyecto decidí construirlo de manera modular, esto por constumbre a como hacía en proyectos de Java con el objetivo de separar bien las responsabilidades de cada uno de los modulos y de cada una de las carpetas que existen en el proyecto, lo cual me permite trabajr de una manera más rápida y a mi considreación más limpia 
+I decided to build the project in a modular way, due to habit from how I worked on Java projects, with the goal of clearly separating the responsibilities of each module and each folder that exists in the project, which allows me to work in a faster and, in my consideration, cleaner way.
 
-  La estructura actual del proyecto es la siguiente:
+The current structure of the project is as follows:
 
-  lib/
-  ├── cli.ex 
-  ├── file_processor.ex        
-  ├── reporter.ex              
-  ├── sequential.ex            
-  ├── handlers/                
-  │   ├── csv_handler.ex
-  │   ├── json_handler.ex
-  │   └── log_handler.ex
-  ├── parsers/                  
-  │   ├── csv.ex
-  │   ├── json.ex
-  │   └── log.ex
-  └── parallel/
-      ├── coordinator.ex       
+lib/  
+├── cli.ex  
+├── file_processor.ex  
+├── reporter.ex  
+├── sequential.ex  
+├── handlers/  
+│   ├── csv_handler.ex  
+│   ├── json_handler.ex  
+│   └── log_handler.ex  
+├── parsers/  
+│   ├── csv.ex  
+│   ├── json.ex  
+│   └── log.ex  
+└── parallel/  
+    ├── coordinator.ex  
 
-  
-  Con esta estructura lo que se hizo fué separar la lógica de todo lo que conlleva el procesamiento de archivos haciendo que cada modulo y cada carpeta tenga una responsabilidad clara 
+With this structure, what was done was to separate the logic of everything involved in file processing, making each module and each folder have a clear responsibility.
 
-  ### cli.ex
+### cli.ex
 
-  El módulo FileProcessor.CLI convierte el proyecto en un ejecutable que puede ser usado desde la terminal.
-  Su función principal es recibir argumentos desde la línea de comandos, interpretar qué función del módulo FileProcessor se debe ejecutar y con qué parámetros, y luego llamar a esa función.
+The FileProcessor.CLI module turns the project into an executable that can be used from the terminal.  
+Its main function is to receive arguments from the command line, interpret which function from the FileProcessor module should be executed and with which parameters, and then call that function.
 
-  Esto permite que ya no sea necesario abrir IEx para procesar archivos; basta con escribir el comando desde la terminal.
+This allows it to no longer be necessary to open IEx to process files; it is enough to type the command from the terminal.
 
-  ### file_processor.ex
+### file_processor.ex
 
-  Este módulo esta pensado para ser la API pública donde se encuentran las funciones que el usuario va a utilizar directamente para procesar archivos ya sea de manera secuencia o de manera paralela,  ayuda principalmente a que el usuario no conozca los detalles de como funciona cada procedimiento y de esta manera haya una interfaz clara para el usuario
+This module is intended to be the public API where the functions that the user will directly use to process files either sequentially or in parallel are located. It mainly helps so that the user does not need to know the details of how each procedure works, and in this way there is a clear interface for the user.
 
-  ### reporter.ex
+### reporter.ex
 
-  Este módulo se encarga de construir los reportes de los archivos una vez que eestos están procesados, esto me permite que este módulo simplemente se encarge de recibir las métricas obtenidas de los archivos procesados y se construya el reporte a partir de ellas sin que se tenga conocimiento de como se obtuvieron esas métricas o de todo lo que se tuvo que hacer para obtenerlas, simplemente las utiliza para construir un reporte
+This module is responsible for building the reports of the files once they have been processed. This allows this module to simply be responsible for receiving the metrics obtained from the processed files and building the report from them without knowing how those metrics were obtained or everything that had to be done to obtain them; it simply uses them to build a report.
 
-  ### secuential.ex
-  
+### secuential.ex
 
-  Este módulo sirve como un coordinador del procesamiento secuencial de archivos y
-  directorios.
+This module serves as a coordinator for sequential file and directory processing.
 
-  Su función principal es recibir una ruta como entrada y ejecutar una serie de
-  pasos (usando operador pipe) encadenados que permiten validar la existencia de la ruta, identificar si
-  corresponde a un archivo o a un directorio y, en el caso de los archivos, determinar
-  su extensión.
+Its main function is to receive a path as input and execute a series of steps (using the pipe operator) chained together that allow validating the existence of the path, identifying whether it corresponds to a file or a directory and, in the case of files, determining their extension.
 
-  Con base en esta información, el módulo decide si debe delegar el procesamiento a
-  un módulo handler específico según el tipo de archivo (.csv, .json o .log), procesar
-  recursivamente el contenido de un directorio o regresar un error cuando la entrada
-  es inválida o la extensión no es soportada.
+Based on this information, the module decides whether it should delegate processing to a specific handler module according to the file type (.csv, .json, or .log), process the contents of a directory recursively, or return an error when the input is invalid or the extension is not supported.
 
-  Este módulo es como un coordinador del flujo secuencial, al igual que los otros modulos es importante ya que con el mantenemos separada la responsabilidad de validar archivos y la lógica de parsear y obtener las métricas de cada tipo de archivo (.csv, .json, .log) lo cual se encargan otros módulos
+This module acts as a coordinator of the sequential flow. Like the other modules, it is important because it keeps the responsibility of validating files separate from the logic of parsing and obtaining metrics for each file type (.csv, .json, .log), which is handled by other modules.
 
 ### handlers
 
-Dentro de esta carpeta se encuentran los módulos encargados de manejar el flujo de
-procesamiento específico para cada tipo de archivo soportado en el proyecto
-(.csv, .json y .log).
+Within this folder are the modules responsible for handling the specific processing flow for each file type supported by the project (.csv, .json, and .log).
 
-Cada uno de estos módulos es invocado desde  (secuential.ex) 
-una vez que se ha validado la ruta y determinado que el archivo tiene una extensión
-soportada. La responsabilidad de estos módulos no es realizar el procesamiento
-completo, sino otra vez coordinar las distintas etapas necesarias para un tipo de archivo
-específico.
+Each of these modules is invoked from (secuential.ex) once the path has been validated and it has been determined that the file has a supported extension. The responsibility of these modules is not to perform the complete processing, but once again to coordinate the different stages necessary for a specific file type.
 
-El flujo que manejan estos módulos es el siguiente:
-- Delegar el parseo del archivo al módulo parser correspondiente
-- Recibir las métricas generadas a partir del contenido del archivo
-- Construir el reporte utilizando el módulo Reporter
-- Guardar el reporte generado en texto plano
+The flow handled by these modules is as follows:
+- Delegate file parsing to the corresponding parser module
+- Receive the metrics generated from the file content
+- Build the report using the Reporter module
+- Save the generated report in plain text
 
-Al igual que antes esta decision fué pensada para que por ejemplo si en un futuro un archivo debe de pasar por otro proceso simplemente en cada uno de estos modulos se agrega otra funcion llamando a un nuevo modulo que se encargará de dicha nueva implementación, y de esta manera se sigue manteniendo en orden el flujo que deben de seguir los archivos para su procesamiento
+As before, this decision was made so that, for example, if in the future a file needs to go through another process, simply another function can be added in each of these modules calling a new module that will handle that new implementation, and in this way the processing flow remains organized.
 
 ### parsers
 
-En esta carpeta se encuentran los módulos responsables del parseo de los archivos
-soportados por el proyecto (.csv, .json y .log).
+In this folder are the modules responsible for parsing the files supported by the project (.csv, .json, and .log).
 
-Cada parser se encarga de leer y transformar el contenido del archivo en estructuras que puedan ser procesadas, así como de calcular todas las métricas solicitadas para ese tipo de archivo. Estas métricas se van acumulando y,
-una vez finalizado el procesamiento, se retornan como resultado.
+Each parser is responsible for reading and transforming the content of the file into structures that can be processed, as well as calculating all the requested metrics for that type of file. These metrics are accumulated and, once processing is complete, are returned as a result.
 
-Nuevamente esto es importante porque cada uno de estos módulos únicamente se van a encargar de leer y tranformar los datos y producir las métricas necesarias, las cuales despues van a ser utilizadas por los módulos handler para darselas al módulo de hacer el reporte.
-De esta manera si en el futuro se quieren realizar nuevas métricas únicamente hay que cambiar estos módulos
-
+Again, this is important because each of these modules will only be responsible for reading and transforming the data and producing the necessary metrics, which will later be used by the handler modules to pass them to the report-building module.  
+In this way, if new metrics are needed in the future, only these modules need to be changed.
 
 ### parallel/coordinator.ex
 
-Este módulo sirve como el coordinador del procesamiento paralelo de archivos.
-Su responsabilidad es organizar, lanzar y supervisar la ejecución
-concurrente de múltiples archivos utilizando procesos independientes.
+This module serves as the coordinator for parallel file processing.  
+Its responsibility is to organize, launch, and supervise the concurrent execution of multiple files using independent processes.
 
-Por ejemplo:
+For example:
 
-Cuando se recibe un directorio como entrada, el coordinador obtiene la lista
-de archivos contenidos en él (File.ls) y los transforma en rutas completas. Después,
-estos archivos se llevan a procesamiento paralelo mediante el uso del módulo
-Task que ya viene con Elixir.
+When a directory is received as input, the coordinator obtains the list of files contained within it (File.ls) and transforms them into full paths. Then, these files are sent to parallel processing using the Task module that comes built into Elixir.
 
-Decidí Task ya que proporciona una manera sencilla y segura para el manejo de concurrencia, permitiendo crear procesos sin necesidad de realizar manualmente funciones como spawn, send y receive. Ya que con cada llamada a Task.async/1 se crea un proceso y hace uso de estas funciones automaticamente y se encarga tambien de 
-procesar un archivo de forma aislada.
+I chose Task because it provides a simple and safe way to handle concurrency, allowing processes to be created without the need to manually handle functions such as spawn, send, and receive. With each call to Task.async/1, a process is created and these functions are used automatically, and it is also responsible for processing a file in an isolated way.
 
-Cada tarea o digamos procedimiento de procedimiento de los archivos la delegamos módulo FileProcessor.Sequential,
-y esto permite reutilizar  la misma lógica de procesamiento utilizada en el modo secuencial, es decir lo que tenia que ver con validar la ruta y obtener los detalles como la extension y todo esto garantiza consistencia ya que ambos enfoques se hacen internamente de la misma manera y tambien evitamos duplicación de código.
+Each task, or let's say each file processing procedure, is delegated to the FileProcessor.Sequential module, which allows reusing the same processing logic used in sequential mode. That is, everything related to validating the path and obtaining details such as the extension. This guarantees consistency since both approaches are internally handled in the same way and also avoids code duplication.
 
-El coordinador también es responsable de:
- Recolectar los resultados de todas las tareas creadas
- Manejar posibles errores o timeouts con Task.await/2
- Mostrar un indicador de progreso en tiempo real conforme los archivos son procesados
+The coordinator is also responsible for:
+- Collecting the results of all created tasks
+- Handling possible errors or timeouts with Task.await/2
+- Displaying a real-time progress indicator as files are processed
 
-El uso de Task.await/2 con un tiempo límite nos permite evitar que por ejemplo
-en caso de que algún proceso falle o tarde demasiado en completarse, simplemente mate a ese proceso y continue con los demás en lugar de quedarse atorado en él lo cual hace que todo sea más controlado.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Using Task.await/2 with a time limit allows us to avoid cases where, for example, if a process fails or takes too long to complete, that process is simply terminated and execution continues with the others instead of getting stuck on it, which makes everything more controlled.
