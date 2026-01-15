@@ -229,47 +229,7 @@ en caso de que algún proceso falle o tarde demasiado en completarse, simplement
 
 
 
-# Futuras mejoras (Entrega 3)
 
-
-## Manejo avanzado de errores y timeouts
-
-Actualmente se cuenta con un manejo básico de timeouts en el procesamiento paralelo.
-Para la siguiente entrega, se va a permitir que el usuario configure el tiempo máximo
-de ejecución permitido para cada proceso, esto con parámetros de entrada a las funciones principales
-
-
-## Manejo de archivos corruptos
-
-Se van a agregar validaciones  durante el proceso de parseo para
-detectar archivos corruptos o con formato inválido para que cuando tengamos  estos casos, el sistema
-no se detenga si no que se registren los fallos y continuar
-con el resto de los archivos.
-
-Los archivos que no puedan ser procesados correctamente serán incluidos en el
-reporte final como archivos fallidos, junto con la razón del error.
-
-## Reintentos automáticos
-
-Se va a implementar un sistema de reintentos
-automáticos para aquellos archivos cuyo procesamiento falle debido a errores como timeouts o algunos fallos en la lectura
-
-
-### Logging de errores
-
-Se va realizar  un sistema de logging que permita registrar errores de manera
-detallada, incluyendo:
- Tipo de error
- Archivo afectado
- Fecha y hora del fallo
- etc
-
-
-### Ejecutable
-
-Para la siguiente entrega del proyecto, nuestro programa se va a  converti en una herramienta ejecutable desde la línea de comandos, para que no haya necesidad necesidad de escribir iex -S mix
-
-Esto permitirá ejecutar el proyecto con lineas de comando mas amigables para el usuario
 
 
 
