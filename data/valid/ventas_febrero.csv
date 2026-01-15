@@ -1,0 +1,31 @@
+fecha,producto,categoria,precio_unitario,cantidad,descuento
+01/02/2024,Laptop Lenovo ThinkPad,Computadoras,1499.99,3,10
+01/02/2024,Mouse Gaming Razer,Accesorios,99.99,4,5
+02/02/2024,Teclado Inalámbrico,Accesorios,89.99,6,0
+03/02/2024,"Monitor Dell 24""",Monitores,299.99,5,20
+03/02/2024,Laptop Lenovo ThinkPad,Computadoras,1499.99,1,10
+04/02/2024,Webcam 4K,Accesorios,149.99,3,15
+05/02/2024,Cable DisplayPort,Accesorios,34.99,10,0
+06/02/2024,SSD 512GB Kingston,Almacenamiento,99.99,8,30
+07/02/2024,RAM 8GB Kingston,Componentes,69.99,7,5
+08/02/2024,Mouse Pad RGB,Accesorios,49.99,9,10
+09/02/2024,"Monitor Dell 24""",Monitores,299.99,3,20
+10/02/2024,Laptop ASUS VivoBook,Computadoras,799.99,4,25
+11/02/2024,Teclado Inalámbrico,Accesorios,89.99,5,0
+12/02/2024,Auriculares Bose,Audio,349.99,2,35
+13/02/2024,SSD 512GB Kingston,Almacenamiento,99.99,6,30
+14/02/2024,Laptop Lenovo ThinkPad,Computadoras,1499.99,2,10
+15/02/2024,Cable Ethernet Cat6,Accesorios,14.99,30,0
+16/02/2024,Webcam 4K,Accesorios,149.99,4,15
+17/02/2024,"Monitor BenQ 28""",Monitores,449.99,2,10
+18/02/2024,Mouse Gaming Razer,Accesorios,99.99,6,5
+19/02/2024,RAM 64GB Corsair,Componentes,499.99,1,20
+20/02/2024,Laptop ASUS VivoBook,Computadoras,799.99,2,25
+21/02/2024,Teclado Inalámbrico,Accesorios,89.99,7,0
+22/02/2024,Auriculares Bose,Audio,349.99,4,35
+23/02/2024,SSD 1TB Kingston,Almacenamiento,179.99,4,25
+24/02/2024,"Monitor Dell 24""",Monitores,299.99,4,20
+25/02/2024,Mouse Pad RGB,Accesorios,49.99,8,10
+26/02/2024,Laptop Lenovo ThinkPad,Computadoras,1499.99,1,10
+27/02/2024,Cable HDMI 2.1,Accesorios,29.99,18,0
+28/02/2024,RAM 8GB Kingston,Componentes,69.99,10,5

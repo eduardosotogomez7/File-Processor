@@ -1,0 +1,31 @@
+fecha,producto,categoria,precio_unitario,cantidad,descuento
+02/01/2024,Laptop Dell XPS,Computadoras,1299.99,2,5
+02/01/2024,Mouse Logitech MX,Accesorios,79.99,5,0
+03/01/2024,Teclado Mecánico,Accesorios,149.99,3,10
+03/01/2024,"Monitor LG 27""",Monitores,399.99,4,15
+04/01/2024,Laptop Dell XPS,Computadoras,1299.99,1,5
+05/01/2024,Webcam HD,Accesorios,89.99,8,20
+05/01/2024,Cable HDMI,Accesorios,19.99,15,0
+06/01/2024,SSD 1TB Samsung,Almacenamiento,189.99,6,25
+08/01/2024,RAM 16GB Corsair,Componentes,129.99,4,10
+08/01/2024,Mouse Pad Gaming,Accesorios,29.99,12,5
+09/01/2024,"Monitor LG 27""",Monitores,399.99,2,15
+10/01/2024,Laptop HP Pavilion,Computadoras,899.99,3,20
+10/01/2024,Teclado Mecánico,Accesorios,149.99,2,10
+12/01/2024,Auriculares Sony,Audio,199.99,7,30
+12/01/2024,SSD 1TB Samsung,Almacenamiento,189.99,3,25
+13/01/2024,Laptop Dell XPS,Computadoras,1299.99,2,5
+15/01/2024,Cable USB-C,Accesorios,24.99,20,0
+15/01/2024,Webcam HD,Accesorios,89.99,5,20
+16/01/2024,"Monitor Samsung 32""",Monitores,599.99,2,10
+17/01/2024,Mouse Logitech MX,Accesorios,79.99,8,0
+18/01/2024,RAM 32GB Corsair,Componentes,249.99,2,15
+19/01/2024,Laptop HP Pavilion,Computadoras,899.99,1,20
+20/01/2024,Teclado Mecánico,Accesorios,149.99,4,10
+22/01/2024,Auriculares Sony,Audio,199.99,3,30
+23/01/2024,SSD 2TB Samsung,Almacenamiento,359.99,2,20
+24/01/2024,"Monitor LG 27""",Monitores,399.99,3,15
+25/01/2024,Mouse Pad Gaming,Accesorios,29.99,10,5
+26/01/2024,Laptop Dell XPS,Computadoras,1299.99,1,5
+28/01/2024,Cable HDMI,Accesorios,19.99,25,0
+30/01/2024,RAM 16GB Corsair,Componentes,129.99,6,10
