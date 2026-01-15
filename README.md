@@ -201,3 +201,106 @@ The coordinator is also responsible for:
 - Displaying a real-time progress indicator as files are processed
 
 Using Task.await/2 with a time limit allows us to avoid cases where, for example, if a process fails or takes too long to complete, that process is simply terminated and execution continues with the others instead of getting stuck on it, which makes everything more controlled.
+
+
+# FileProcessor CLI – Usage Guide
+
+The `FileProcessor` executable provides a command-line interface (CLI) that allows processing files without opening IEx.
+
+All commands follow the general structure:
+
+./file_processor <command> <path> [options]
+
+Where:
+- `<command>` is the operation to execute
+- `<path>` is a file or directory path
+- `[options]` are optional parameters in `key=value` format
+
+---
+
+## process_secuential
+
+Processes a single file, a list of files, or a directory **sequentially**.
+
+### Syntax
+
+./file_processor process_secuential <path>
+
+### Examples
+
+Process a single file:
+./file_processor process_secuential "data/valid/ventas_enero.csv"
+
+Process an entire directory:
+./file_processor process_secuential "data/valid"
+
+## Process_parallel 
+
+Processes files in parallel, using multiple concurrent processes.
+
+### Syntax
+
+./file_processor process_parallel <path> [key=value ...]
+
+### Optional options
+
+max_workers – Maximum number of concurrent worker processes
+
+timeout – Maximum time (in milliseconds) allowed per file
+
+
+### Examples 
+
+Process a directory using default options:
+./file_processor process_parallel "data/valid"
+
+Process a directory with custom options:
+./file_processor process_parallel "data/valid" max_workers=3 timeout=10000
+
+### Description
+
+Each file is processed in an independent process using Elixir’s Task module.
+This mode improves performance when handling multiple files.
+
+Options must be provided without brackets, without commas, and using the key=value format.
+
+## benchmark
+
+Compares the execution time of sequential vs parallel processing.
+
+### Syntax
+
+./file_processor benchmark <path>
+
+### Example
+
+./file_processor benchmark "data/valid"
+
+### Output example
+
+Secuential time : 15000
+Parallel Time: 5000
+
+### Description
+
+This command runs both processing modes internally and prints the execution time in microseconds, allowing a direct performance comparison.
+
+## Help Comand
+
+Displays usage information for the CLI.
+
+### Syntax
+
+./file_processor --help
+
+## Notes
+
+All paths are resolved relative to the location of the executable
+
+If a path contains spaces, it must be wrapped in quotes
+
+Options are only supported for process_parallel
+
+
+
+
