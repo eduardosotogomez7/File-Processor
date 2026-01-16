@@ -1,0 +1,3 @@
+Tarea primera clase (Simulación)
+
+En esta primera clase lo que hicimos fue ver la estructura del entorno de la plataforma de Elixir, vimos las diferentes capas que la componen que van desde la máquina virtual de Erlang la cual se le conoce como BEAM, pasando por sus herramientas como son OTP Observer y Mnesia hasta llegar a sus herramientas, librerías y Frameworks y finalmente llegando al lenguaje de programación que es Elixir, entender muy bien de que se encarga cada parte del ecosistema es importante para el buen desarrollo de los proyectos, también vimos que para este lenguaje es muy importante conocer y usar bien la terminal de nuestro sistema ya que desde ahí vamos a realizar muchas tareas

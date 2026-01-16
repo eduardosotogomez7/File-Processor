@@ -301,6 +301,91 @@ If a path contains spaces, it must be wrapped in quotes
 
 Options are only supported for process_parallel
 
+## Common mistakes and troubleshooting
+
+This section describes common mistakes when using the FileProcessor executable
+and how to fix them.
+
+### 1. Using brackets for CLI options
+
+ Incorrect:
+./file_processor process_parallel "data/valid" [max_workers=3, timeout=10000]
+
+Correct:
+./file_processor process_parallel "data/valid" max_workers=3 timeout=10000
+
+### 2. Using commas between options 
+
+Incorrect:
+./file_processor process_parallel "data/valid" max_workers=3, timeout=10000
+
+Correct:
+./file_processor process_parallel "data/valid" max_workers=3 timeout=10000
+
+### 3. Forgetting quotes around paths with spaces
+
+Incorrect:
+./file_processor process_secuential data/my files
+
+Correct
+
+./file_processor process_secuential "data/my files"
+
+Always wrap paths in quotes if they contain spaces.
+
+### 4. Running the executable from the wrong directory
+
+Incorrect:
+./file_processor process_secuential data/valid
+
+
+Correct
+cd file_processor
+./file_processor process_secuential data/valid
+
+
+All relative paths are resolved from the directory where the executable is run.
+
+### 5. Forgetting execution permissions
+
+Using an unsupported file extension
+
+Incorrect:
+./file_processor process_secuential "data/file.txt"
+
+Correct:
+
+Supported extensions:
+
+.csv
+
+.json
+
+.log
+
+Files with unsupported extensions will return an error message.
+
+
+### 6.Passing invalid option values
+
+Incorrect:
+./file_processor process_parallel "data/valid" max_workers=abc
+
+Correct:
+
+./file_processor process_parallel "data/valid" max_workers=4
+
+Numeric options must contain valid integer values.
+
+### 7. Mixing IEx usage with CLI usage
+
+Correct(CLI):
+./file_processor process_secuential "data/valid"
+
+Correct(IEx);
+FileProcessor.process_secuential("data/valid")
+
+
 
 
 
