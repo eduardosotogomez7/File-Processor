@@ -1,4 +1,55 @@
 defmodule FileProcessor.Parser.CSV do
+  @moduledoc """
+CSV file parser responsible for reading, validating, and analyzing sales data.
+
+This module reads a CSV file from disk, parses its content, validates each row,
+and generates structured information about the processed data. It separates
+valid rows from invalid ones, collects detailed validation errors, and computes
+business metrics when possible.
+
+## Responsibilities
+
+- Read CSV file content from a given path.
+- Parse rows using `NimbleCSV`.
+- Validate each row structure and individual fields.
+- Separate valid lines from invalid lines with detailed error messages.
+- Determine the overall processing state (`:ok`, `:partial`, or `:error`).
+- Compute metrics such as total sales, best seller, and date range.
+
+## Expected CSV format
+
+Each row must contain exactly six fields in the following order:
+
+1. Date (`DD/MM/YYYY`)
+2. Product name (non-empty string)
+3. Category
+4. Unit price (positive number)
+5. Quantity (positive integer)
+6. Discount (integer between 0 and 100)
+
+Rows that do not match this structure or contain invalid values are reported
+as errors.
+
+## Return value
+
+On success, returns:
+
+    {:ok, %{
+      state: :ok | :partial | :error,
+      processed_lines: integer(),
+      valid_lines: integer(),
+      error_lines: integer(),
+      errors: list(),
+      metrics: map()
+    }}
+
+If the file cannot be read, returns:
+
+    {:error, reason}
+
+This module does not perform any file output; it only parses and analyzes data.
+"""
+
 
   def parse(path) do
     case File.read(path) do
