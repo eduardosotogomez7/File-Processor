@@ -29,7 +29,7 @@ defmodule FileProcessor.Sequential do
 
 
   def process(_) do
-    {:error, "Mensaje de error"}
+    {:error, "Invalid input. Expected a file path as a string or a list of file paths."}
   end
 
   defp fileExists?(path) do
