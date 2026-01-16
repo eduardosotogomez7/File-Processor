@@ -1,4 +1,19 @@
 defmodule FileProcessor.Parallel.Coordinator do
+  @moduledoc """
+Coordinator module responsible for parallel file and directory processing.
+
+This module manages the execution of file processing tasks using concurrency.
+Its responsibilities include:
+- Reading directories and resolving file paths.
+- Coordinating parallel execution of file processing tasks.
+- Normalizing and validating parallel execution options.
+- Handling empty directories, empty file lists, and invalid options gracefully.
+
+It acts as the central orchestration layer for parallel processing,
+delegating actual file handling to the sequential processor while
+controlling concurrency, timeouts, and execution flow.
+"""
+
 
   def process_directory(path) when is_bitstring(path) do
     case File.ls(path) do
