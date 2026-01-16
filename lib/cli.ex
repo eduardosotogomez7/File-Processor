@@ -45,7 +45,8 @@ defmodule FileProcessor.CLI do
   end
 
   defp run_command("benchmark", path, _opts) do
-    FileProcessor.benchmark(path)
+    resultado = FileProcessor.benchmark(path)
+    IO.puts(resultado)
   end
 
   defp run_command(cmd, _path, _opts) do
