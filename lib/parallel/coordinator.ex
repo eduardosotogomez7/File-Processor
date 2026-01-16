@@ -2,10 +2,15 @@ defmodule FileProcessor.Parallel.Coordinator do
 
   def process_directory(path) when is_bitstring(path) do
     case File.ls(path) do
+
+
+      {:ok,[]} -> {:warning, "Directory is empty"}
+
       {:ok, files} ->
         files
         |> Enum.map(fn x -> Path.join(path, x) end)
         |> process_files()
+
     end
   end
 
