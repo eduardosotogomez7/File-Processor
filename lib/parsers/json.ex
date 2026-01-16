@@ -1,4 +1,66 @@
 defmodule FileProcessor.Parser.JSON do
+  @moduledoc """
+JSON file parser responsible for validating user activity data and generating analytics.
+
+This module reads and parses a JSON file containing information about users and
+their sessions. It validates the structure and content of the data, collects
+detailed validation errors, and computes metrics related to user activity and
+usage patterns.
+
+## Responsibilities
+
+- Read JSON content from a file.
+- Decode JSON data using `Jason`.
+- Validate the overall structure and required fields.
+- Validate users and sessions independently, collecting detailed errors.
+- Determine the processing state (`:ok`, `:partial`, or `:error`).
+- Calculate analytics and usage metrics from valid data only.
+
+## Expected JSON structure
+
+The root JSON object must contain:
+
+- `"timestamp"`: ISO8601 datetime string.
+- `"usuarios"`: list of user objects.
+- `"sesiones"`: list of session objects.
+
+### User object requirements
+
+Each user must include:
+
+- `"id"`: integer
+- `"nombre"`: string
+- `"email"`: string
+- `"activo"`: boolean
+- `"ultimo_acceso"`: ISO8601 datetime string
+
+### Session object requirements
+
+Each session must include:
+
+- `"usuario_id"`: integer
+- `"inicio"`: ISO8601 datetime string
+- `"duracion_segundos"`: non-negative integer
+- `"paginas_visitadas"`: non-negative integer
+- `"acciones"`: list of actions
+
+## Return value
+
+On success, returns:
+
+    {:ok, %{
+      state: :ok | :partial | :error,
+      metrics: map(),
+      errors: list()
+    }}
+
+If any error occurs while reading or decoding the file, the function returns a
+successful tuple with an error state and detailed error information.
+
+This module focuses exclusively on validation and analytics and does not handle
+report generation or file output.
+"""
+
   def parse(path) do
   with {:ok, content} <- File.read(path),
        {:ok, data} <- Jason.decode(content),
