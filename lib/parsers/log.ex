@@ -1,4 +1,32 @@
 defmodule FileProcessor.Parser.LOG do
+  @moduledoc """
+Parser for LOG files.
+
+This module processes plain text log files line by line, validating their format
+and extracting structured log entries. Each valid log entry contains date, time,
+log level, component, and message information.
+
+During parsing, invalid log lines are collected with their corresponding line
+numbers, allowing partial success when some entries are valid.
+
+In addition to parsing, this module computes several metrics based on the valid
+logs, including error distribution, activity patterns, and recurring error
+messages.
+
+Returned states:
+- `:ok` when all log lines are valid
+- `:partial` when some lines are valid and some contain errors
+- `:error` when no valid log entries are found
+
+Metrics generated include:
+- Component with the most errors
+- Distribution of logs by level
+- Distribution of logs by hour
+- Most frequent error messages
+- Time between critical (FATAL) errors
+- Recurrent error keyword patterns
+"""
+
   def parse(path) do
 
     {valid_logs, errors} =
