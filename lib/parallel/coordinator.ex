@@ -52,8 +52,8 @@ end
   end
 
   def process_files(files, options) when is_list(files) do
-  max_workers = Map.get(options, :max_workers, System.schedulers_online())
-  timeout = Map.get(options, :timeout, 5000)
+  %{max_workers: max_workers, timeout: timeout} =
+    normalize_options(options)
 
   files
   |> Task.async_stream(
@@ -65,6 +65,31 @@ end
   )
   |> Enum.to_list()
 end
+
+
+
+defp normalize_options(options) do
+  max_workers =
+    case Map.get(options, :max_workers) do
+      value when is_integer(value) and value > 0 ->
+        value
+
+      _ ->
+        System.schedulers_online()
+    end
+
+  timeout =
+    case Map.get(options, :timeout) do
+      value when is_integer(value) and value > 0 ->
+        value
+
+      _ ->
+        5_000
+    end
+
+  %{max_workers: max_workers, timeout: timeout}
+end
+
 
 
 
