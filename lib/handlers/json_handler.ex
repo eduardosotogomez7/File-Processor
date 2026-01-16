@@ -1,4 +1,17 @@
 defmodule FileProcessor.Handler.JSON do
+  @moduledoc """
+Handler module responsible for processing JSON files.
+
+This module manages the complete JSON processing pipeline:
+- Parses the JSON file.
+- Logs parsing errors, if any.
+- Builds a report describing the processing result.
+- Saves the generated report to disk.
+
+It serves as an integration point between the JSON parser,
+error logging, and report generation components.
+"""
+
   def process(path) do
     {:ok, result} = FileProcessor.Parser.JSON.parse(path)
 
