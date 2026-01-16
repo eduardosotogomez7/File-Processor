@@ -1,34 +1,33 @@
 defmodule FileProcessor.Parser.LOG do
   @moduledoc """
-Parser for LOG files.
+  Parser for LOG files.
 
-This module processes plain text log files line by line, validating their format
-and extracting structured log entries. Each valid log entry contains date, time,
-log level, component, and message information.
+  This module processes plain text log files line by line, validating their format
+  and extracting structured log entries. Each valid log entry contains date, time,
+  log level, component, and message information.
 
-During parsing, invalid log lines are collected with their corresponding line
-numbers, allowing partial success when some entries are valid.
+  During parsing, invalid log lines are collected with their corresponding line
+  numbers, allowing partial success when some entries are valid.
 
-In addition to parsing, this module computes several metrics based on the valid
-logs, including error distribution, activity patterns, and recurring error
-messages.
+  In addition to parsing, this module computes several metrics based on the valid
+  logs, including error distribution, activity patterns, and recurring error
+  messages.
 
-Returned states:
-- `:ok` when all log lines are valid
-- `:partial` when some lines are valid and some contain errors
-- `:error` when no valid log entries are found
+  Returned states:
+  - `:ok` when all log lines are valid
+  - `:partial` when some lines are valid and some contain errors
+  - `:error` when no valid log entries are found
 
-Metrics generated include:
-- Component with the most errors
-- Distribution of logs by level
-- Distribution of logs by hour
-- Most frequent error messages
-- Time between critical (FATAL) errors
-- Recurrent error keyword patterns
-"""
+  Metrics generated include:
+  - Component with the most errors
+  - Distribution of logs by level
+  - Distribution of logs by hour
+  - Most frequent error messages
+  - Time between critical (FATAL) errors
+  - Recurrent error keyword patterns
+  """
 
   def parse(path) do
-
     {valid_logs, errors} =
       File.stream!(path)
       |> Enum.with_index()
@@ -47,7 +46,8 @@ Metrics generated include:
 
     metrics =
       case logs do
-        [] -> %{}
+        [] ->
+          %{}
 
         _ ->
           %{
@@ -60,45 +60,34 @@ Metrics generated include:
           }
       end
 
+    state =
+      cond do
+        errors == [] -> :ok
+        logs != [] -> :partial
+        true -> :error
+      end
 
-
-      state =
-        cond do
-          errors == [] -> :ok
-          logs != [] -> :partial
-          true -> :error
-        end
-
-
-      {:ok, %{state: state,
-              metrics: metrics,
-              errors: errors
-      }}
-
-
-
-
+    {:ok, %{state: state, metrics: metrics, errors: errors}}
   end
 
   defp parse_line(line) do
-  line = String.trim(line)
+    line = String.trim(line)
 
-  case String.split(line, " ", parts: 5) do
-    [date, time, level, component, message] ->
-      {:ok,
-       %{
-         date: date,
-         time: time,
-         level: clean(level),
-         component: clean(component),
-         message: message
-       }}
+    case String.split(line, " ", parts: 5) do
+      [date, time, level, component, message] ->
+        {:ok,
+         %{
+           date: date,
+           time: time,
+           level: clean(level),
+           component: clean(component),
+           message: message
+         }}
 
-    _ ->
-      {:error, :invalid_log_format}
+      _ ->
+        {:error, :invalid_log_format}
+    end
   end
-end
-
 
   defp clean(value) do
     value
@@ -106,11 +95,9 @@ end
     |> String.trim_trailing("]")
   end
 
-  #--------------------------------------------------------------------------
+  # --------------------------------------------------------------------------
   #      Component with most errors
-  #-------------------------------------------------------------------------
-
-
+  # -------------------------------------------------------------------------
 
   defp component_with_most_errors(logs) do
     logs
@@ -122,18 +109,16 @@ end
     logs
     |> error_logs()
     |> Enum.group_by(& &1.component)
-    |> Enum.map(fn {component,entries} -> {component, length(entries)} end)
-
+    |> Enum.map(fn {component, entries} -> {component, length(entries)} end)
   end
 
   defp error_logs(logs) do
     Enum.filter(logs, fn log -> log.level in ["ERROR", "FATAL"] end)
   end
 
-  #-------------------------------------------------------------------------
+  # -------------------------------------------------------------------------
   # Distribution by levels
-  #--------------------------------------------------------------------------
-
+  # --------------------------------------------------------------------------
 
   defp distribution_by_level(logs) do
     logs
@@ -142,9 +127,9 @@ end
     |> Map.new()
   end
 
-  #--------------------------------------------------------------
+  # --------------------------------------------------------------
   # Distribution by hour
-  #-------------------------------------------------------------
+  # -------------------------------------------------------------
   defp distribution_by_hour(logs) do
     logs
     |> Enum.group_by(fn log -> hour_of_log(log.time) end)
@@ -157,78 +142,66 @@ end
     |> List.first()
   end
 
-#--------------------------------------------------------------------------
-#   Most frequent error messages
-#--------------------------------------------------------------------------
+  # --------------------------------------------------------------------------
+  #   Most frequent error messages
+  # --------------------------------------------------------------------------
 
-defp most_frequent_errors(logs) do
-  logs
-  |> error_logs()
-  |> Enum.group_by(& &1.message)
-  |> Enum.map(fn {message, entries} -> {message, length(entries)} end)
-  |> Enum.sort_by(fn {_msg, count} -> count end, :desc)
-end
+  defp most_frequent_errors(logs) do
+    logs
+    |> error_logs()
+    |> Enum.group_by(& &1.message)
+    |> Enum.map(fn {message, entries} -> {message, length(entries)} end)
+    |> Enum.sort_by(fn {_msg, count} -> count end, :desc)
+  end
 
+  # --------------------------------------------------------------------------
+  #   Time between critical errors (seconds)
+  # --------------------------------------------------------------------------
 
-#--------------------------------------------------------------------------
-#   Time between critical errors (seconds)
-#--------------------------------------------------------------------------
+  defp time_between_critical_errors(logs) do
+    logs
+    |> critical_errors()
+    |> Enum.map(&to_naive_datetime/1)
+    |> Enum.sort()
+    |> calculate_time_differences()
+  end
 
-defp time_between_critical_errors(logs) do
-  logs
-  |> critical_errors()
-  |> Enum.map(&to_naive_datetime/1)
-  |> Enum.sort()
-  |> calculate_time_differences()
-end
+  defp calculate_time_differences([]), do: []
+  defp calculate_time_differences([_]), do: []
 
-defp calculate_time_differences([]), do: []
-defp calculate_time_differences([_]), do: []
+  defp calculate_time_differences(datetimes) do
+    datetimes
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.map(fn [t1, t2] ->
+      NaiveDateTime.diff(t2, t1, :second)
+    end)
+  end
 
-defp calculate_time_differences(datetimes) do
-  datetimes
-  |> Enum.chunk_every(2, 1, :discard)
-  |> Enum.map(fn [t1, t2] ->
-    NaiveDateTime.diff(t2, t1, :second)
-  end)
-end
+  defp to_naive_datetime(log) do
+    NaiveDateTime.from_iso8601!("#{log.date} #{log.time}")
+  end
 
+  defp critical_errors(logs) do
+    Enum.filter(logs, fn log -> log.level == "FATAL" end)
+  end
 
-defp to_naive_datetime(log) do
-  NaiveDateTime.from_iso8601!("#{log.date} #{log.time}")
-end
+  # --------------------------------------------------------------------------
+  #   Recurrent error patterns
+  # --------------------------------------------------------------------------
 
+  defp recurrent_error_patterns(logs) do
+    logs
+    |> error_logs()
+    |> Enum.flat_map(fn log -> extract_keywords(log.message) end)
+    |> Enum.frequencies()
+    |> Enum.sort_by(fn {_word, count} -> count end, :desc)
+  end
 
-defp critical_errors(logs) do
-  Enum.filter(logs, fn log -> log.level == "FATAL" end)
-end
-
-
-#--------------------------------------------------------------------------
-#   Recurrent error patterns
-#--------------------------------------------------------------------------
-
-defp recurrent_error_patterns(logs) do
-  logs
-  |> error_logs()
-  |> Enum.flat_map(fn log -> extract_keywords(log.message) end)
-  |> Enum.frequencies()
-  |> Enum.sort_by(fn {_word, count} -> count end, :desc)
-end
-
-
-defp extract_keywords(message) do
-  message
-  |> String.downcase()
-  |> String.replace(~r/[^a-z\s]/, "")
-  |> String.split()
-  |> Enum.reject(&(&1 in ["the", "and", "to", "of", "a", "in"]))
-end
-
-
-
-
-
-
-
+  defp extract_keywords(message) do
+    message
+    |> String.downcase()
+    |> String.replace(~r/[^a-z\s]/, "")
+    |> String.split()
+    |> Enum.reject(&(&1 in ["the", "and", "to", "of", "a", "in"]))
+  end
 end
