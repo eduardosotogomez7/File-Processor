@@ -30,7 +30,8 @@ defmodule FileProcessor.CLI do
   end
 
   defp run_command("process_secuential", path, _opts) do
-    FileProcessor.process_secuential(path)
+    result = FileProcessor.process_secuential(path)
+    IO.puts(result)
   end
 
   defp run_command("process_parallel", path, opts) when map_size(opts) == 0 do
