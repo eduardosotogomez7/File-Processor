@@ -30,30 +30,41 @@ end
 
   def process_files(files) when is_list(files) do
 
-    totalFiles = length(files)
+    case length(files) do
 
-    tasks =
-      files
-      |> Enum.with_index(1)
-      |> Enum.map(fn {path, index} ->
-        Task.async(fn ->
-          result = FileProcessor.Sequential.process(path)
-          IO.puts("[#{index} / #{totalFiles}] Procesado")
-          result
+      0 -> {:error, "List of files is empty"}
+
+
+
+      _ ->
+
+        totalFiles = length(files)
+
+        task =
+          files
+          |> Enum.with_index(1)
+          |> Enum.map(fn {path, index} ->
+            Task.async(fn ->
+              result = FileProcessor.Sequential.process(path)
+              IO.puts("[#{index} / #{totalFiles}] Procesado")
+              result
+            end)
+          end)
+
+        task
+        |> Enum.map(fn task ->
+          try do
+            {:ok, Task.await(task, 5000)}
+          catch
+            :exit, {:timeout, _} -> {:error, :timeout}
+
+            :exit, reason -> {:error, reason}
+
+          end
         end)
 
-      end)
 
-    tasks
-    |> Enum.map(fn task ->
-      try do
-        {:ok, Task.await(task, 5000)}
-      catch
-        :exit, {:timeout, _} -> {:error, :timeout}
-
-        :exit, reason -> {:error, reason}
-      end
-    end)
+    end
   end
 
   def process_files(files, options) when is_list(files) do
