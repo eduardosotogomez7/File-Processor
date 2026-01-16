@@ -1,9 +1,17 @@
 defmodule FileProcessor.Sequential do
   def process(path) when is_bitstring(path) do
-    path
-    |> fileExists?()
-    |> obtainDetails()
-    |> obtainReport()
+
+    case String.trim(path) do
+
+      "" -> {:error, "Path can not be empty"}
+
+      _ ->
+        path
+        |> fileExists?()
+        |> obtainDetails()
+        |> obtainReport()
+
+    end
   end
 
 
