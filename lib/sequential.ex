@@ -23,9 +23,15 @@ defmodule FileProcessor.Sequential do
 
 
   def process(files) when is_list(files) do
-      files
-      |> Enum.map(fn x -> process(x) end)
+  case Enum.all?(files, &is_bitstring/1) do
+    true ->
+      Enum.map(files, &process/1)
+
+    false ->
+      {:error, "Invalid list. All elements must be file paths as strings."}
   end
+end
+
 
 
   def process(_) do
