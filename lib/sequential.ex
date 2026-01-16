@@ -7,6 +7,13 @@ defmodule FileProcessor.Sequential do
   end
 
 
+
+  def process([]) do
+    {:warning, "No files to process"}
+  end
+
+
+
   def process(files) when is_list(files) do
       files
       |> Enum.map(fn x -> process(x) end)
