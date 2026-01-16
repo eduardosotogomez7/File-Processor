@@ -1,38 +1,30 @@
 defmodule FileProcessor.Sequential do
   def process(path) when is_bitstring(path) do
-
     case String.trim(path) do
-
-      "" -> {:error, "Path can not be empty"}
+      "" ->
+        {:error, "Path can not be empty"}
 
       _ ->
         path
         |> fileExists?()
         |> obtainDetails()
         |> obtainReport()
-
     end
   end
-
-
 
   def process([]) do
     {:warning, "No files to process"}
   end
 
-
-
   def process(files) when is_list(files) do
-  case Enum.all?(files, &is_bitstring/1) do
-    true ->
-      Enum.map(files, &process/1)
+    case Enum.all?(files, &is_bitstring/1) do
+      true ->
+        Enum.map(files, &process/1)
 
-    false ->
-      {:error, "Invalid list. All elements must be file paths as strings."}
+      false ->
+        {:error, "Invalid list. All elements must be file paths as strings."}
+    end
   end
-end
-
-
 
   def process(_) do
     {:error, "Invalid input. Expected a file path as a string or a list of file paths."}
@@ -45,16 +37,13 @@ end
     end
   end
 
-
-
-  defp obtainDetails({:error,_} = error) do
+  defp obtainDetails({:error, _} = error) do
     error
   end
 
-  defp obtainDetails({:ok,path}) do
+  defp obtainDetails({:ok, path}) do
     cond do
       File.regular?(path) -> {:file, Path.extname(path), path}
-
       File.dir?(path) -> {:dir, path}
     end
   end
@@ -83,30 +72,28 @@ end
     {:ok, "Directorio"}
   end
 
-  defp obtainReport({:error,_} = error) do
+  defp obtainReport({:error, _} = error) do
     error
   end
 
   defp process_directory(path) do
     case File.ls(path) do
-      {:ok, []} -> {:warning, "The Directory is Empty"}
+      {:ok, []} ->
+        {:warning, "The Directory is Empty"}
 
       {:ok, files} ->
         files
-        |> Enum.map(fn x -> Path.join(path,x) end)
+        |> Enum.map(fn x -> Path.join(path, x) end)
         |> Enum.map(fn file ->
           cond do
             File.regular?(file) -> process(file)
-
             File.dir?(file) -> process_directory(file)
-
             true -> {:error, "Unsoported file type: #{file}"}
-
           end
         end)
 
-
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 end
