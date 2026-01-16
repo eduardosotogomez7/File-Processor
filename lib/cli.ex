@@ -40,7 +40,8 @@ defmodule FileProcessor.CLI do
   end
 
   defp run_command("process_parallel", path, opts) do
-    FileProcessor.process_parallel(path, opts)
+    result = FileProcessor.process_parallel(path, opts)
+    IO.puts(result)
   end
 
   defp run_command("benchmark", path, _opts) do
