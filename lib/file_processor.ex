@@ -63,6 +63,10 @@ defmodule FileProcessor do
   FileProcessor.Parallel.Coordinator.process_directory(path, options)
 end
 
+def process_parallel(path,options) when is_list(path) and is_map(options) do
+  FileProcessor.Parallel.Coordinator.process_files(path,options)
+end
+
 @doc """
   Benchmarks the processing of files in a given path, comparing sequential vs parallel execution.
 

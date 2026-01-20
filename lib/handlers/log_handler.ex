@@ -13,20 +13,22 @@ and reporting specifically for LOG file processing.
 """
 
   def process(path) do
-    {:ok, result} = FileProcessor.Parser.LOG.parse(path)
 
-    FileProcessor.ErrorLogger.log_errors(
-      %{extension: :log, filename: path},
-      result.errors
-    )
+    case FileProcessor.Parser.LOG.parse(path) do
+      {:ok, result} ->
+        report = FileProcessor.Reporter.buil_report(:log, path, result)
+        FileProcessor.Reporter.save_report(:log, path, report)
 
-    report =
-      FileProcessor.Reporter.buil_report(
-        :log,
-        path,
-        result
-      )
+      {:partial, errors} ->
+        FileProcessor.ErrorLogger.log_errors(
+          %{extension: :log, filename: path}, errors.errors, errors.state
+        )
 
-    FileProcessor.Reporter.save_report(:log, path, report)
+      {:error, errors} ->
+        FileProcessor.ErrorLogger.log_errors(
+          %{extension: :log, filename: path}, errors.errors, errors.state
+        )
+    end
+
   end
 end

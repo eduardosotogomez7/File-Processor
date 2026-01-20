@@ -11,7 +11,8 @@ defmodule FileProcessor.Reporter do
 
     path = output_path(extension, filename)
     case File.write(path, report_content) do
-      :ok -> {:ok, path}
+      :ok ->
+        {:ok, path}
       {:error, reason} -> {:error, reason}
     end
 
@@ -93,7 +94,7 @@ end
 
 defp log_metrics(metrics) when map_size(metrics) == 0 do
   """
-  No fue posible calcular métricas porque no hubo líneas válidas.
+  No fue posible calcular métricas porque no hubo líneas válidas o el archivo está vacio.
   """
 end
 
@@ -138,7 +139,7 @@ defp log_metrics(metrics) do
   critical_time_text =
     case metrics.time_between_critical_errors do
       [] ->
-        "    No hay suficientes errores críticos para calcular intervalos."
+        "    No hay suficientes errores críticos para calcular intervalos o el archivo está vacio."
 
       times ->
         times
@@ -214,7 +215,7 @@ end
 
 defp json_metrics(metrics) when map_size(metrics) == 0 do
   """
-  No fue posible calcular métricas porque no hubo datos válidos.
+  No fue posible calcular métricas porque no hubo datos válidos o el archivo está vacio.
   """
 end
 
@@ -282,7 +283,7 @@ end
 
   defp csv_metrics(metrics) when map_size(metrics) == 0 do
   """
-  No fue posible calcular métricas porque no hubo líneas válidas.
+  No fue posible calcular métricas porque no hubo líneas válidas o el archivo esta vacio.
   """
 end
 

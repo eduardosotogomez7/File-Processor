@@ -15,14 +15,26 @@ defmodule FileProcessor.Parallel.Coordinator do
   """
 
   def process_directory(path) when is_bitstring(path) do
-    case File.ls(path) do
-      {:ok, []} ->
-        {:warning, "Directory is empty"}
+    cond do
+      File.regular?(path) ->
+        process_files([path])
 
-      {:ok, files} ->
-        files
-        |> Enum.map(fn x -> Path.join(path, x) end)
-        |> process_files()
+      File.dir?(path) ->
+        case File.ls(path) do
+          {:ok, []} ->
+            {:warning, "Directory is empty"}
+
+          {:ok, files} ->
+            files
+            |> Enum.map(&Path.join(path, &1))
+            |> process_files()
+
+          {:error, reason} ->
+            {:error, reason}
+        end
+
+      true ->
+        {:error, "File not found"}
     end
   end
 
@@ -45,28 +57,34 @@ defmodule FileProcessor.Parallel.Coordinator do
         {:error, "List of files is empty"}
 
       _ ->
-        totalFiles = length(files)
+        case Enum.all?(files, fn x -> File.regular?(x) end) do
+          true ->
+            totalFiles = length(files)
 
-        task =
-          files
-          |> Enum.with_index(1)
-          |> Enum.map(fn {path, index} ->
-            Task.async(fn ->
-              result = FileProcessor.Sequential.process(path)
-              IO.puts("[#{index} / #{totalFiles}] Procesado")
-              result
+            task =
+              files
+              |> Enum.with_index(1)
+              |> Enum.map(fn {path, index} ->
+                Task.async(fn ->
+                  result = FileProcessor.Sequential.process(path)
+                  IO.puts("[#{index} / #{totalFiles}] Procesado")
+                  result
+                end)
+              end)
+
+            task
+            |> Enum.map(fn task ->
+              try do
+                Task.await(task, 5_000)
+              catch
+                :exit, {:timeout, _} -> {:error, :timeout}
+                :exit, reason -> {:error, reason}
+              end
             end)
-          end)
 
-        task
-        |> Enum.map(fn task ->
-          try do
-            {:ok, Task.await(task, 5000)}
-          catch
-            :exit, {:timeout, _} -> {:error, :timeout}
-            :exit, reason -> {:error, reason}
-          end
-        end)
+          false ->
+            Enum.map(files, fn x -> process_directory(x) end)
+        end
     end
   end
 
@@ -74,15 +92,29 @@ defmodule FileProcessor.Parallel.Coordinator do
     %{max_workers: max_workers, timeout: timeout} =
       normalize_options(options)
 
+    total_files = length(files)
+
     files
+    |> Enum.with_index(1)
     |> Task.async_stream(
-      fn path ->
-        FileProcessor.Sequential.process(path)
+      fn {path, index} ->
+        result = FileProcessor.Sequential.process(path)
+        IO.puts("[#{index} / #{total_files}] Procesado")
+        result
       end,
       max_concurrency: max_workers,
       timeout: timeout
     )
-    |> Enum.to_list()
+    |> Enum.map(fn
+      {:ok, res} ->
+        res
+
+      {:exit, :timeout} ->
+        {:error, :timeout}
+
+      {:exit, reason} ->
+        {:error, reason}
+    end)
   end
 
   defp normalize_options(options) do

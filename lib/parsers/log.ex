@@ -67,14 +67,30 @@ defmodule FileProcessor.Parser.LOG do
         true -> :error
       end
 
-    {:ok, %{state: state, metrics: metrics, errors: errors}}
+    case state do
+      :ok ->
+        {:ok, %{state: state, metrics: metrics, errors: errors}}
+
+      :partial -> {:partial, %{state: state, errors: errors}}
+
+      :error -> {:error, %{state: state, errors: errors}}
+    end
+
+
   end
 
-  defp parse_line(line) do
-    line = String.trim(line)
+  @valid_levels ["INFO", "WARN", "ERROR", "FATAL","DEBUG"]
 
-    case String.split(line, " ", parts: 5) do
-      [date, time, level, component, message] ->
+defp parse_line(line) do
+  line = String.trim(line)
+
+  case String.split(line, " ", parts: 5) do
+    [date, time, level, component, message] ->
+      with :ok <- validate_date(date),
+           :ok <- validate_time(time),
+           :ok <- validate_level(level),
+           :ok <- validate_component(component),
+           true <- message != "" do
         {:ok,
          %{
            date: date,
@@ -83,11 +99,50 @@ defmodule FileProcessor.Parser.LOG do
            component: clean(component),
            message: message
          }}
+      else
+        _ -> {:error, :invalid_log_format}
+      end
 
-      _ ->
-        {:error, :invalid_log_format}
-    end
+    _ ->
+      {:error, :invalid_log_format}
   end
+end
+
+defp validate_date(date) do
+  case Date.from_iso8601(date) do
+    {:ok, _} -> :ok
+    {:error, _} -> :error
+  end
+end
+
+defp validate_time(time) do
+  case Time.from_iso8601(time) do
+    {:ok, _} -> :ok
+    {:error, _} -> :error
+  end
+end
+
+defp validate_level(level) do
+  case clean(level) do
+    level when level in @valid_levels -> :ok
+    _ -> :error
+  end
+end
+
+defp validate_component(component) do
+  case {String.starts_with?(component, "["), String.ends_with?(component, "]")} do
+    {true, true} -> :ok
+    _ -> :error
+  end
+end
+
+
+
+
+
+
+
+
 
   defp clean(value) do
     value

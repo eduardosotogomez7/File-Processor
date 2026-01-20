@@ -1,31 +1,35 @@
 defmodule FileProcessor.Handler.CSV do
   @moduledoc """
-Handler module responsible for processing CSV files.
+  Handler module responsible for processing CSV files.
 
-This module coordinates the full CSV processing workflow:
-- Parses the CSV file.
-- Logs any errors found during parsing.
-- Builds a processing report based on the parsed result.
-- Persists the generated report to disk.
+  This module coordinates the full CSV processing workflow:
+  - Parses the CSV file.
+  - Logs any errors found during parsing.
+  - Builds a processing report based on the parsed result.
+  - Persists the generated report to disk.
 
-It acts as an orchestration layer between the parser, error logger,
-and reporter components for CSV files.
-"""
+  It acts as an orchestration layer between the parser, error logger,
+  and reporter components for CSV files.
+  """
   def process(path) do
-    {:ok, result} = FileProcessor.Parser.CSV.parse(path)
+    case FileProcessor.Parser.CSV.parse(path) do
+      {:ok, result} ->
+        report = FileProcessor.Reporter.buil_report(:csv, path, result)
+        FileProcessor.Reporter.save_report(:csv, path, report)
 
-    FileProcessor.ErrorLogger.log_errors(
-      %{extension: :csv, filename: path},
-      result.errors
-    )
+      {:partial, errors} ->
+        FileProcessor.ErrorLogger.log_errors(
+          %{extension: :csv, filename: path},
+          errors.errors, errors.state
+        )
 
-    report =
-      FileProcessor.Reporter.buil_report(
-        :csv,
-        path,
-        result
-      )
+      {:error, errors} ->
+        FileProcessor.ErrorLogger.log_errors(
+          %{extension: :csv, filename: path},
+          errors.errors, errors.state
+        )
 
-    FileProcessor.Reporter.save_report(:csv, path, report)
+
+    end
   end
 end

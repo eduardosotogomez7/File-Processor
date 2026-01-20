@@ -101,6 +101,33 @@ defmodule FileProcessor.Parser.CSV do
            metrics: metrics
          }}
 
+        case state do
+          :ok ->
+            {:ok,
+             %{
+               state: state,
+               processed_lines: length(rows),
+               valid_lines: length(valid_lines),
+               error_lines: length(error_lines),
+               errors: error_lines,
+               metrics: metrics
+             }}
+
+          :partial ->
+            {:partial,
+             %{
+               state: state,
+               errors: error_lines
+             }}
+
+          :error ->
+            {:error,
+             %{
+               state: state,
+               errors: error_lines
+             }}
+        end
+
       {:error, reason} ->
         {:error, reason}
     end

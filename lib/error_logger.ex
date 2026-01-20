@@ -1,15 +1,21 @@
 defmodule FileProcessor.ErrorLogger do
   @error_log_path "data/output/errors.log"
 
-  def log_errors(_context, []), do: :ok
+  def log_errors(_context, [], _), do: :ok
 
-  def log_errors(context, errors) when is_list(errors) do
+  def log_errors(context, errors, state) when is_list(errors) do
     File.mkdir_p!("data/output")
 
     log_entry =
       build_log_entry(context, errors)
 
     File.write(@error_log_path, log_entry, [:append])
+
+    case state do
+      :partial -> {:partial, @error_log_path}
+      :error -> {:error, @error_log_path}
+    end
+
   end
 
   defp build_log_entry(context, errors) do

@@ -73,10 +73,25 @@ defmodule FileProcessor.Parser.JSON do
           true -> :error
         end
 
-      {:ok, %{state: state, metrics: metrics, errors: validated.errors}}
+      case state do
+        :ok -> {:ok, %{state: state, metrics: metrics, errors: validated.errors}}
+        :partial -> {:partial, %{state: state, errors: validated.errors}}
+        :error -> {:error, %{state: state, errors: validated.errors}}
+      end
     else
+      {:error, %Jason.DecodeError{} = decode_error} ->
+        {:error,
+         %{
+           state: :error,
+           errors: [Exception.message(decode_error)]
+         }}
+
       {:error, reason} ->
-        {:ok, %{state: :error, metrics: %{}, errors: [reason]}}
+        {:error,
+         %{
+           state: :error,
+           errors: [reason]
+         }}
     end
   end
 
@@ -103,6 +118,10 @@ defmodule FileProcessor.Parser.JSON do
     end
   end
 
+  def validate_structure(_invalid) do
+    {:error, "invalid_structure"}
+  end
+
   defp validate_timestamp(timestamp) do
     case DateTime.from_iso8601(timestamp) do
       {:ok, _, _} -> {:ok, timestamp}
@@ -110,7 +129,7 @@ defmodule FileProcessor.Parser.JSON do
     end
   end
 
-  defp validate_usuarios([]), do: {:error, :usuarios_empty}
+  defp validate_usuarios([]), do: {[], [:usuarios_empty]}
 
   defp validate_usuarios(usuarios) do
     usuarios
@@ -144,7 +163,9 @@ defmodule FileProcessor.Parser.JSON do
 
   defp validate_usuario(_), do: {:error, :invalid_usuario}
 
-  defp validate_sesiones([]), do: {:error, :sesiones_empty}
+  defp validate_sesiones(sessions) when length(sessions) == 0 do
+    {[], [:sessions_empty]}
+  end
 
   defp validate_sesiones(sesiones) do
     sesiones
@@ -203,6 +224,9 @@ defmodule FileProcessor.Parser.JSON do
   # ------------------------------------------------------------------------------
   #     Active vs Inactive
   # ------------------------------------------------------------------------------
+
+  defp active_vs_inactive_users([]), do: %{active: 0, inactive: 0}
+
   defp active_vs_inactive_users(users) when is_list(users) do
     users
     |> Enum.reduce(%{active: 0, inactive: 0}, fn user, acc ->
@@ -217,6 +241,10 @@ defmodule FileProcessor.Parser.JSON do
   #    Average Session
   # -------------------------------------------------------------------------------
 
+  defp average_session([]) do
+    0
+  end
+
   defp average_session(sessions) when is_list(sessions) do
     total_sessions = Enum.reduce(sessions, 0, fn session, acc -> acc + time_session(session) end)
 
@@ -230,6 +258,9 @@ defmodule FileProcessor.Parser.JSON do
   # ---------------------------------------------------------------------------------
   #  Total Pages Visited
   # ---------------------------------------------------------------------------------
+
+  defp total_pages_visited([]), do: 0
+
   defp total_pages_visited(sessions) when is_list(sessions) do
     Enum.reduce(sessions, 0, fn session, acc ->
       acc + pages_visited(session)
@@ -243,6 +274,9 @@ defmodule FileProcessor.Parser.JSON do
   # ---------------------------------------------------------------------------------
   #  Top 5 Actions
   # ---------------------------------------------------------------------------------
+
+  defp top_actions([]), do: []
+
   defp top_actions(sessions) when is_list(sessions) do
     sessions
     |> Enum.flat_map(&actions_from_session/1)
@@ -258,6 +292,9 @@ defmodule FileProcessor.Parser.JSON do
   # ---------------------------------------------------------------------------------
   #  Peak Activity Hour
   # ---------------------------------------------------------------------------------
+
+  defp peak_activity_hour([]), do: {:none, 0}
+
   defp peak_activity_hour(sessions) when is_list(sessions) do
     sessions
     |> Enum.map(&hour_from_session/1)

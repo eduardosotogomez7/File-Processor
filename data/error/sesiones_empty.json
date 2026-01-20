@@ -1,0 +1,62 @@
+{
+  "timestamp": "2024-02-29T12:00:00Z",
+  "usuarios": [
+    {
+      "id": 2001,
+      "nombre": "Patricia Mendoza",
+      "email": "patricia.mendoza@empresa.com",
+      "activo": true,
+      "ultimo_acceso": "2024-02-29T10:30:00Z"
+    },
+    {
+      "id": 2002,
+      "nombre": "Andrés Vargas",
+      "email": "andres.vargas@empresa.com",
+      "activo": true,
+      "ultimo_acceso": "2024-02-29T11:45:00Z"
+    },
+    {
+      "id": 2003,
+      "nombre": "Sofia Herrera",
+      "email": "sofia.herrera@empresa.com",
+      "activo": true,
+      "ultimo_acceso": "2024-02-29T08:20:00Z"
+    },
+    {
+      "id": 2004,
+      "nombre": "Diego Castro",
+      "email": "diego.castro@empresa.com",
+      "activo": false,
+      "ultimo_acceso": "2024-02-01T15:00:00Z"
+    },
+    {
+      "id": 2005,
+      "nombre": "Valentina Morales",
+      "email": "valentina.morales@empresa.com",
+      "activo": true,
+      "ultimo_acceso": "2024-02-28T22:15:00Z"
+    },
+    {
+      "id": 2006,
+      "nombre": "Fernando Jiménez",
+      "email": "fernando.jimenez@empresa.com",
+      "activo": true,
+      "ultimo_acceso": "2024-02-29T09:00:00Z"
+    },
+    {
+      "id": 2007,
+      "nombre": "Lucía Ortega",
+      "email": "lucia.ortega@empresa.com",
+      "activo": true,
+      "ultimo_acceso": "2024-02-29T11:30:00Z"
+    },
+    {
+      "id": 2008,
+      "nombre": "Alejandro Ramos",
+      "email": "alejandro.ramos@empresa.com",
+      "activo": true,
+      "ultimo_acceso": "2024-02-29T07:45:00Z"
+    }
+  ],
+  "sesiones": []
+}
