@@ -1,7 +1,7 @@
 defmodule FileProcessor.ErrorLogger do
   @error_log_path "data/output/errors.log"
 
-  def log_errors(_context, [], _), do: :ok
+
 
   def log_errors(context, errors, state) when is_list(errors) do
     File.mkdir_p!("data/output")

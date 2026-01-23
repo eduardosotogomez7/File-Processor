@@ -1,0 +1,53 @@
+=================================================================
+                  REPORTE DE PROCESAMIENTO DE ARCHIVOS
+=================================================================
+MÉTRICAS DE ARCHIVOS LOG
+----------------------------------------------------------------
+[Archivo: aplicacion.log]
+
+Estado del procesamiento: ok
+
+MÉTRICAS CALCULADAS
+----------------------------------------------------------------
+  * Distribución por nivel:
+    - DEBUG: 10
+    - ERROR: 8
+    - INFO: 47
+    - WARN: 6
+
+  * Componente con más errores:
+    Integration (2 errores)
+
+  * Distribución por hora:
+    - 08:00 -> 11 logs
+    - 09:00 -> 8 logs
+    - 10:00 -> 9 logs
+    - 11:00 -> 6 logs
+    - 12:00 -> 6 logs
+    - 13:00 -> 4 logs
+    - 14:00 -> 6 logs
+    - 15:00 -> 7 logs
+    - 16:00 -> 6 logs
+    - 17:00 -> 6 logs
+    - 18:00 -> 2 logs
+
+  * Errores más frecuentes:
+    - "API externa retornó código 503" (1 veces)
+    - "Constraint violation: stock no puede ser negativo" (1 veces)
+    - "Error al actualizar stock del producto ID:4532" (1 veces)
+    - "Error al procesar pago con tarjeta" (1 veces)
+    - "Error de JavaScript en módulo de gráficos" (1 veces)
+
+  * Tiempo entre errores críticos:
+    No hay suficientes errores críticos para calcular intervalos o el archivo está vacio.
+
+  * Patrones de error recurrentes:
+    - error (3)
+    - al (3)
+    - con (2)
+    - stock (2)
+    - de (2)
+
+
+No se encontraron errores en el archivo.
+

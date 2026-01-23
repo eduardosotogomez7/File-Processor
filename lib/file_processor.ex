@@ -89,8 +89,8 @@ def benchmark(path) do
 
   IO.puts("""
 
-    Secuential time : #{secuential_time}
-    Parallel Time: #{parallel_time}
+    Secuential time : #{secuential_time / 1000} milliSeconds
+    Parallel Time: #{parallel_time / 1000} milliSeconds
 
   """)
 end

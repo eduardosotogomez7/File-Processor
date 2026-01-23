@@ -86,20 +86,18 @@ defmodule FileProcessor.Parser.CSV do
 
         state =
           cond do
-            error_lines == [] -> :ok
-            valid_lines == [] -> :error
-            true -> :partial
-          end
+            valid_lines == [] and error_lines == [] ->
+              :error
 
-        {:ok,
-         %{
-           state: state,
-           processed_lines: length(rows),
-           valid_lines: length(valid_lines),
-           error_lines: length(error_lines),
-           errors: error_lines,
-           metrics: metrics
-         }}
+            error_lines == [] ->
+              :ok
+
+            valid_lines != [] ->
+              :partial
+
+            true ->
+              :error
+          end
 
         case state do
           :ok ->

@@ -67,7 +67,7 @@ defmodule FileProcessor.Parallel.Coordinator do
               |> Enum.map(fn {path, index} ->
                 Task.async(fn ->
                   result = FileProcessor.Sequential.process(path)
-                  IO.puts("[#{index} / #{totalFiles}] Procesado")
+                  notify_progress("[#{index} / #{totalFiles}] Procesado")
                   result
                 end)
               end)
@@ -99,7 +99,7 @@ defmodule FileProcessor.Parallel.Coordinator do
     |> Task.async_stream(
       fn {path, index} ->
         result = FileProcessor.Sequential.process(path)
-        IO.puts("[#{index} / #{total_files}] Procesado")
+        notify_progress("[#{index} / #{total_files}] Procesado")
         result
       end,
       max_concurrency: max_workers,
@@ -116,6 +116,13 @@ defmodule FileProcessor.Parallel.Coordinator do
         {:error, reason}
     end)
   end
+
+  defp notify_progress(message) do
+  case Application.get_env(:file_processor, :show_progress, false) do
+    true -> IO.puts(message)
+    false -> :ok
+  end
+end
 
   defp normalize_options(options) do
     max_workers =

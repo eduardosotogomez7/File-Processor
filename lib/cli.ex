@@ -45,12 +45,17 @@ defmodule FileProcessor.CLI do
   end
 
   defp run_command("process_parallel", path, opts) when map_size(opts) == 0 do
+    Application.put_env(:file_processor, :show_progress, true)
     result = FileProcessor.process_parallel(path)
 
     Enum.each(result, fn x -> IO.puts(print_result(x)) end)
+  after
+    Application.put_env(:file_processor, :show_progress, false)
   end
 
   defp run_command("process_parallel", path, opts) do
+    Application.put_env(:file_processor, :show_progress, true)
+
     {valid_opts, invalid_opts} = validate_options(opts)
 
     if invalid_opts != [] do
@@ -76,7 +81,6 @@ defmodule FileProcessor.CLI do
             FileProcessor.process_parallel(path, valid_opts)
         end
 
-
       Enum.map(result, fn x -> IO.puts(print_result(x)) end)
     catch
       :exit, {:timeout, _} ->
@@ -88,6 +92,8 @@ defmodule FileProcessor.CLI do
           - Aumenta el valor de timeout (ej. timeout=5000)
           - Reduce el número de archivos
         """)
+    after
+      Application.put_env(:file_processor, :show_progress, false)
     end
   end
 

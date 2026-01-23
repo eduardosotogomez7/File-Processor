@@ -1,0 +1,27 @@
+=================================================================
+                  REPORTE DE PROCESAMIENTO DE ARCHIVOS
+=================================================================
+MÉTRICAS DE ARCHIVOS JSON
+----------------------------------------------------------------
+[Archivo: usuarios.json]
+
+Estado del procesamiento: ok
+
+MÉTRICAS CALCULADAS
+----------------------------------------------------------------
+* Usuarios registrados: 10
+* Usuarios activos: 7
+* Usuarios inactivos: 3
+* Duración promedio de sesión: 1602.0 segundos
+* Total de páginas visitadas: 161
+* Top 5 acciones más comunes:
+    1. login (10)
+    2. logout (10)
+    3. ver_dashboard (6)
+    4. buscar (4)
+    5. ver_reportes (4)
+* Hora pico de actividad: 9:00 (2 eventos)
+
+
+No se encontraron errores en el archivo.
+

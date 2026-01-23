@@ -1,0 +1,24 @@
+=================================================================
+                  REPORTE DE PROCESAMIENTO DE ARCHIVOS
+=================================================================
+  MÉTRICAS DE ARCHIVOS CSV
+  ----------------------------------------------------------------
+  [Archivo: ventas_enero.csv]
+
+  Estado del procesamiento: ok
+  Líneas procesadas: 30
+  Líneas válidas: 30
+  Líneas con error: 0
+
+  MÉTRICAS CALCULADAS
+----------------------------------------------------------------
+* Total de ventas: $24399.93
+* Productos únicos: 15
+* Producto más vendido: Cable HDMI (40 unidades)
+* Categoría con más ingresos: Computadoras
+* Promedio de descuento: 12.0
+* Rango de fechas: Desde 2024-01-02 Hasta 2024-01-30
+
+
+  No se encontraron errores en el archivo.
+

@@ -44,105 +44,103 @@ defmodule FileProcessor.Parser.LOG do
     logs = Enum.reverse(valid_logs)
     errors = Enum.reverse(errors)
 
-    metrics =
-      case logs do
-        [] ->
-          %{}
+    with [] <- logs,
+         [] <- errors do
+      {:error, %{state: :error, errors: []}}
+    else
+      _ ->
+        metrics =
+          case logs do
+            [] ->
+              %{}
 
-        _ ->
-          %{
-            most_errors: component_with_most_errors(logs),
-            distribution_by_level: distribution_by_level(logs),
-            distribution_by_hour: distribution_by_hour(logs),
-            frequent_errors: most_frequent_errors(logs),
-            time_between_critical_errors: time_between_critical_errors(logs),
-            recurrent_error_patterns: recurrent_error_patterns(logs)
-          }
-      end
+            _ ->
+              %{
+                most_errors: component_with_most_errors(logs),
+                distribution_by_level: distribution_by_level(logs),
+                distribution_by_hour: distribution_by_hour(logs),
+                frequent_errors: most_frequent_errors(logs),
+                time_between_critical_errors: time_between_critical_errors(logs),
+                recurrent_error_patterns: recurrent_error_patterns(logs)
+              }
+          end
 
-    state =
-      cond do
-        errors == [] -> :ok
-        logs != [] -> :partial
-        true -> :error
-      end
+        state =
+          cond do
+            logs == [] -> :error
+            errors == [] -> :ok
+            true -> :partial
+          end
 
-    case state do
-      :ok ->
-        {:ok, %{state: state, metrics: metrics, errors: errors}}
+        case state do
+          :ok ->
+            {:ok, %{state: state, metrics: metrics, errors: errors}}
 
-      :partial -> {:partial, %{state: state, errors: errors}}
+          :partial ->
+            {:partial, %{state: state, errors: errors}}
 
-      :error -> {:error, %{state: state, errors: errors}}
+          :error ->
+            {:error, %{state: state, errors: errors}}
+        end
     end
-
-
   end
 
-  @valid_levels ["INFO", "WARN", "ERROR", "FATAL","DEBUG"]
+  @valid_levels ["INFO", "WARN", "ERROR", "FATAL", "DEBUG"]
 
-defp parse_line(line) do
-  line = String.trim(line)
+  defp parse_line(line) do
+    line = String.trim(line)
 
-  case String.split(line, " ", parts: 5) do
-    [date, time, level, component, message] ->
-      with :ok <- validate_date(date),
-           :ok <- validate_time(time),
-           :ok <- validate_level(level),
-           :ok <- validate_component(component),
-           true <- message != "" do
-        {:ok,
-         %{
-           date: date,
-           time: time,
-           level: clean(level),
-           component: clean(component),
-           message: message
-         }}
-      else
-        _ -> {:error, :invalid_log_format}
-      end
+    case String.split(line, " ", parts: 5) do
+      [date, time, level, component, message] ->
+        with :ok <- validate_date(date),
+             :ok <- validate_time(time),
+             :ok <- validate_level(level),
+             :ok <- validate_component(component),
+             true <- message != "" do
+          {:ok,
+           %{
+             date: date,
+             time: time,
+             level: clean(level),
+             component: clean(component),
+             message: message
+           }}
+        else
+          _ -> {:error, :invalid_log_format}
+        end
 
-    _ ->
-      {:error, :invalid_log_format}
+      _ ->
+        {:error, :invalid_log_format}
+    end
   end
-end
 
-defp validate_date(date) do
-  case Date.from_iso8601(date) do
-    {:ok, _} -> :ok
-    {:error, _} -> :error
+  defp validate_date(date) do
+    case Date.from_iso8601(date) do
+      {:ok, _} -> :ok
+      {:error, _} -> :error
+    end
   end
-end
 
-defp validate_time(time) do
-  case Time.from_iso8601(time) do
-    {:ok, _} -> :ok
-    {:error, _} -> :error
+  defp validate_time(time) do
+    case Time.from_iso8601(time) do
+      {:ok, _} -> :ok
+      {:error, _} -> :error
+    end
   end
-end
 
-defp validate_level(level) do
-  case clean(level) do
-    level when level in @valid_levels -> :ok
-    _ -> :error
+  defp validate_level(level) do
+    case clean(level) do
+      level when level in @valid_levels -> :ok
+      _ -> :error
+    end
   end
-end
 
-defp validate_component(component) do
-  case {String.starts_with?(component, "["), String.ends_with?(component, "]")} do
-    {true, true} -> :ok
-    _ -> :error
+  defp validate_component(component) do
+    case {String.starts_with?(component, "["), String.ends_with?(component, "]")} do
+      {true, true} -> :ok
+      _ -> :error
+    end
   end
-end
-
-
-
-
-
-
-
-
 
   defp clean(value) do
     value

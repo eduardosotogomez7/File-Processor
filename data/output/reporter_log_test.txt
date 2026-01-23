@@ -1,0 +1,32 @@
+=================================================================
+                  REPORTE DE PROCESAMIENTO DE ARCHIVOS
+=================================================================
+MÉTRICAS DE ARCHIVOS LOG
+----------------------------------------------------------------
+[Archivo: test.log]
+
+Estado del procesamiento: ok
+
+MÉTRICAS CALCULADAS
+----------------------------------------------------------------
+  * Distribución por nivel:
+    - INFO: 1
+
+  * Componente con más errores:
+    No se detectaron errores.
+
+  * Distribución por hora:
+    - 10:00 -> 1 logs
+
+  * Errores más frecuentes:
+    No se encontraron errores frecuentes.
+
+  * Tiempo entre errores críticos:
+    No hay suficientes errores críticos para calcular intervalos o el archivo está vacio.
+
+  * Patrones de error recurrentes:
+    No se detectaron patrones recurrentes.
+
+
+No se encontraron errores en el archivo.
+

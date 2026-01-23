@@ -1,0 +1,5 @@
+2024-02/28 00:00:01 [MAL] [Sistema] Iniciando rotación de logs diaria
+2024-02-28 abc [INFO] [Sistema] Rotación de logs completada exitosamente
+2024-02-28 00:15:00 [INF] [] Verificación de salud del sistema iniciada
+2024/02/28 00:15:01 [INFO] [Monitor] CPU: 23%, Memoria: 45%, Disco: 67%
+2024-02-28 00:30:00 [BIEN] [Backup] Iniciando respaldo automático
