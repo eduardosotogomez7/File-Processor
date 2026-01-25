@@ -23,7 +23,7 @@ defmodule FileProcessor do
       metrics, state, and errors of the processed file.
   """
   def process_secuential(path) do
-    FileProcessor.Sequential.process(path)
+    FileProcessor.Sequential.process(path) # Aqui mandamos a llamar a la funcion process que esta en el archivo sequential.ex
   end
 
 
@@ -37,13 +37,13 @@ defmodule FileProcessor do
     - A report of results for each processed file.
   """
   def process_parallel(path) when is_bitstring(path) do
-    FileProcessor.Parallel.Coordinator.process_directory(path)
+    FileProcessor.Parallel.Coordinator.process_directory(path) # Aqui mandamos a llamar a la funcion process_directory que esta en parallel/coordinator.ex
   end
 
 
 
   def process_parallel(files) when is_list(files) do
-    FileProcessor.Parallel.Coordinator.process_files(files)
+    FileProcessor.Parallel.Coordinator.process_files(files) # Aqui mandamos a llamar a la funcion process_files que esta en parallel/coordinator.ex
   end
 
 
@@ -60,11 +60,11 @@ defmodule FileProcessor do
     - A list of results for each processed file, using the specified options.
   """
   def process_parallel(path, options) when is_bitstring(path) and is_map(options) do
-  FileProcessor.Parallel.Coordinator.process_directory(path, options)
+  FileProcessor.Parallel.Coordinator.process_directory(path, options) # Aqui mandamos a llamar a la funcion process_directory que esta en parallel/coordinator.ex
 end
 
 def process_parallel(path,options) when is_list(path) and is_map(options) do
-  FileProcessor.Parallel.Coordinator.process_files(path,options)
+  FileProcessor.Parallel.Coordinator.process_files(path,options) # Aqui mandamos a llamar a la funcion process_files que esta en parallel/coordinator.ex
 end
 
 @doc """

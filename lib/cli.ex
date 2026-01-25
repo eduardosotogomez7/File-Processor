@@ -11,10 +11,11 @@ defmodule FileProcessor.CLI do
   You can also call this with --help to see usage.
   """
 
-  def main(args) do
+  def main(args) do # Funcion principal la cual recibe como argumento el comando que el usuario escriba en la linea de comandos
+
     args =
       Enum.map(args, fn x ->
-        String.replace(x, ",", "")
+        String.replace(x, ",", "")      #En caso de que en los argumentos, el usuario haya escrito una coma, esta se toma como separador de parametros
       end)
 
     case args do
@@ -22,9 +23,8 @@ defmodule FileProcessor.CLI do
         print_help()
 
       [command | rest] ->
-        {paths, option_args} = split_paths_and_options(rest)
-        options = parse_options(option_args)
-        run_command(command, paths, options)
+        {paths, option_args} = split_paths_and_options(rest) # En caso que el usuario haya puesto opciones de max_workers y timeout esta funcion ayuda a separar las rutas de los archivos con dichas opciones
+        run_command(command, paths, parse_options(option_args)) #Una vez separado el comando, los paths y las opciones mandamos a llamar a la funcion run_comand
 
       _ ->
         IO.puts(
@@ -39,14 +39,14 @@ defmodule FileProcessor.CLI do
         IO.puts("Se debe de ingresar al menos un archivo a procesar de manera secuencial")
 
       _ ->
-        result = FileProcessor.process_secuential(path)
-        Enum.map(result, fn x -> IO.puts(print_result(x)) end)
+        result = FileProcessor.process_secuential(path) # Aquí invocamos a la funcion llamada process_secuential que está en el archivo file_processor.ex
+        Enum.map(result, fn x -> IO.puts(print_result(x)) end) #Teniendo el resultado de la linea anterior, con esta armamos el mensaje de salida correspondiente para el usuario
     end
   end
 
   defp run_command("process_parallel", path, opts) when map_size(opts) == 0 do
-    Application.put_env(:file_processor, :show_progress, true)
-    result = FileProcessor.process_parallel(path)
+    Application.put_env(:file_processor, :show_progress, true) #Esto nos ayuda a ver el progreso del proceso en tiempo real
+    result = FileProcessor.process_parallel(path) # Aquí invocamos a la funcion llamada process_parallel que está en el archivo file_processor.ex
 
     Enum.each(result, fn x -> IO.puts(print_result(x)) end)
   after
@@ -56,7 +56,7 @@ defmodule FileProcessor.CLI do
   defp run_command("process_parallel", path, opts) do
     Application.put_env(:file_processor, :show_progress, true)
 
-    {valid_opts, invalid_opts} = validate_options(opts)
+    {valid_opts, invalid_opts} = validate_options(opts) # Esta fucion nos ayudará a verificar que las opciones ingresadas por el usuario sean válidas
 
     if invalid_opts != [] do
       invalid_keys =
@@ -75,10 +75,10 @@ defmodule FileProcessor.CLI do
       result =
         case map_size(valid_opts) do
           0 ->
-            FileProcessor.process_parallel(path)
+            FileProcessor.process_parallel(path) # Aquí invocamos a la funcion llamada process_parallel/1 que está en el archivo file_processor.ex
 
           _ ->
-            FileProcessor.process_parallel(path, valid_opts)
+            FileProcessor.process_parallel(path, valid_opts) # Aquí invocamos a la funcion llamada process_parallel/2 que está en el archivo file_processor.ex
         end
 
       Enum.map(result, fn x -> IO.puts(print_result(x)) end)
@@ -193,12 +193,18 @@ defmodule FileProcessor.CLI do
     end
   end
 
+  # Esta funcion nos ayuda a que dadas las entradas de un usuario poder identificar de ellas cuales son rutas de archivos y cuales son opciones
+  # como max_workers y timeout, para eso tomamos los argumentos enviados por el usuario y si en alguno de ellos está el simbolo "=" se infiere
+  # que ese argumento corresponde a una opcion (max_workers o tiomeout)
+  # El valor de retorno es una tupla con dos listas, una que va a corresponer a los paths y otra que va a corresponder a las opciones
   defp split_paths_and_options(args) do
     Enum.split_with(args, fn arg ->
       not String.contains?(arg, "=")
     end)
   end
 
+
+  # Esta funcion nos ayuda a verificar que las opcioones (max_workers y timeout) ingresadas por el usuario sean válidas
   defp validate_options(opts) do
     {valid, invalid} =
       Enum.split_with(opts, fn
@@ -210,6 +216,9 @@ defmodule FileProcessor.CLI do
     {Map.new(valid), invalid}
   end
 
+
+  #Al procesar un archivo obtenemos de resultado un atupla con la informacion necesaria para dar un resultado al usuario, esta función se encarga
+  # de recibir ese reultado para imprimir el mensaje correcto segun el caso
   defp print_result(result) do
     case result do
       {:ok, _, final_path} ->

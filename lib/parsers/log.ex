@@ -27,6 +27,14 @@ defmodule FileProcessor.Parser.LOG do
   - Recurrent error keyword patterns
   """
 
+
+  # En esta funcion parse es donde está todo el flujo de trabajo que va a recibir un archivo log
+  # que va desde hacer el parse correcto, obtener lineas válidas e inválidas y hasta oobtener las métricas
+  # Una vez realizado el proceso y dependiendo del caso, tendremos tres posibles retornos de la funcion
+  # El retorno siempre será una tupla, pero dependiendo el caso, el primer valor de la tupla puede ser
+  # :ok, :partial o :error, despues este valor de retorno es recibido por el archivo log_handler.ex
+  # el cual con ese resultado se encarga de determinar que sigue para este archivo, ya sea realizar un reporte
+  # o notificar de errores
   def parse(path) do
     {valid_logs, errors} =
       File.stream!(path)

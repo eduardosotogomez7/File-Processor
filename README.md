@@ -1,3 +1,401 @@
+# File Processor - Procesamiento de Archivos en Elixir 
+
+# Descripción
+
+En este proyecto se implementa un sistema de procesamiento de archivos en Elixir que es capaz de analizar  
+archivos con extensiones .csv, .json y .log, de los cuales se extraen métricas relevantes de cada uno y se generan los reportes correspondientes en texto plano.
+
+Este sistema puede utilizarse tanto para procesamiento secuencial como paralelo, lo que nos permite comparar el rendimiento entre uno y otro.
+
+Además, el proyecto incluye un ejecutable, por lo que ya no es necesario abrir iex para ejecutar las funciones.
+
+# Ejecución
+
+## Usando IEx (Opcional)
+
+Este proyecto puede ejecutarse directamente desde iex accediendo a la carpeta del proyecto y ejecutando el comando
+
+iex -S mix
+
+Ejemplo:  
+~/file_processor$ iex -S mix
+
+## Usando el ejecutable (Recomendado)
+
+Adicionalmente, el proyecto puede ejecutarse directamente desde la consola de línea de comandos con la siguiente estructura
+
+./file_processor <function> <arguments>
+
+<function>: es la función que deseas llamar del módulo FileProcessor (process_secuential, process_parallel, benchmark) 
+
+<arguments>: Ruta al archivo, lista de archivos o directorio a procesar. Usa comillas si hay espacios en las rutas.
+
+
+# Uso
+
+## Uso con el comando iex -S mix
+
+Una vez que el proyecto ha iniciado con el comando (iex -S mix), puedes hacer uso del módulo "FileProcessor" para procesar uno o múltiples archivos o un directorio completo.
+
+### Procesamiento Secuencial
+
+Para procesar uno o más archivos o un directorio de manera secuencial, se puede usar la función "process_secuential/1" de la siguiente manera:
+
+Para procesar un solo archivo:  
+FileProcessor.process_secuential("data/valid/ventas_enero.csv")
+
+Para procesar múltiples archivos:  
+archivos = ["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]  
+FileProcessor.process_secuential(archivos)
+
+Para procesar un directorio completo:  
+FileProcessor.process_secuential("data/valid")
+
+El procesamiento secuencial procesa y analiza los archivos uno por uno.
+
+### Procesamiento Paralelo
+
+Para procesar múltiples archivos o un directorio completo en paralelo, se puede usar la función "FileProcessor.process_parallel/1" de la siguiente manera:
+
+Para procesar múltiples archivos:  
+archivos = ["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]  
+FileProcessor.process_parallel(archivos)
+
+Para procesar un directorio completo:  
+FileProcessor.process_parallel("data/valid")
+
+El procesamiento paralelo crea múltiples procesos usando Task.async/1, lo que permite ejecutar varios archivos de manera concurrente.
+
+Durante el procesamiento paralelo, se muestra un indicador de progreso que indica cuántos archivos han sido procesados.
+
+Cada archivo procesado, ya sea de forma secuencial o paralela, devuelve un resultado (tupla) con la siguiente estructura:
+
+{:ok, :processed_file_extension, reporter_path} : En caso de que se haya procesado correctamente
+
+{:partial,:processed_file_extension, file_path} : En caso de que el archivo tenga informacion o estructura erronea
+
+{:error, :processed_file_extension, file_parh} : En caso de que el archivo o directorio no se haya podido procesar
+
+Para el procesamiento paralelo, los resultados se recopilan una vez que todos los procesos han finalizado su ejecución.
+
+## Uso con el ejecutable
+
+### Procesamiento secuencial
+
+Procesamiento secuencial de un solo archivo:  
+./file_processor process_secuential "data/valid/ventas_enero.csv"
+
+Procesamiento secuencial de múltiples archivos:  
+./file_processor process_secuential '["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]'
+
+Procesamiento secuencial de un directorio completo:  
+./file_processor process_secuential "data/valid"
+
+### Procesamiento Paralelo
+
+Procesamiento paralelo de múltiples archivos:  
+./file_processor process_parallel '["data/valid/ventas_enero.csv","data/valid/ventas_febrero.csv","data/valid/sesiones.json"]'
+
+Procesamiento paralelo de un directorio completo:  
+./file_processor process_parallel "data/valid"
+
+### Benchmark
+
+Benchmark: comparación de tiempos de ejecución secuencial vs paralelo:  
+./file_processor benchmark "data/valid"
+
+
+Todas las rutas son relativas a la ubicación del ejecutable.
+
+
+
+
+# Explicación de decisiones de diseño
+
+## Estructura del proyecto
+
+Decidí construir el proyecto de forma modular, por costumbre de cómo trabajé en proyectos Java, con el objetivo de separar claramente las responsabilidades de cada módulo y de cada carpeta que existe en el proyecto, lo que me permite trabajar de una manera más rápida y, en mi consideración, más limpia.
+
+La estructura actual del proyecto es la siguiente:
+
+lib/  
+├── cli.ex  
+├── error_logger.ex
+├── file_processor.ex  
+├── reporter.ex  
+├── sequential.ex  
+├── handlers/  
+│   ├── csv_handler.ex  
+│   ├── json_handler.ex  
+│   └── log_handler.ex  
+├── parsers/  
+│   ├── csv.ex  
+│   ├── json.ex  
+│   └── log.ex  
+└── parallel/  
+    ├── coordinator.ex  
+
+Con esta estructura, lo que se hizo fue separar la lógica de todo lo involucrado en el procesamiento de archivos, haciendo que cada módulo y cada carpeta tengan una responsabilidad clara.
+
+### cli.ex
+
+El módulo FileProcessor.CLI convierte el proyecto en un ejecutable que puede ser utilizado desde la terminal.  
+Su función principal es recibir argumentos desde la línea de comandos, interpretar qué función del módulo FileProcessor debe ejecutarse y con qué parámetros, y posteriormente llamar a dicha función.
+
+Esto permite que ya no sea necesario abrir IEx para procesar archivos; basta con escribir el comando desde la terminal.
+
+### file_processor.ex
+
+Este módulo está destinado a ser la API pública donde se encuentran las funciones que el usuario utilizará directamente para procesar archivos de manera secuencial o paralela. Principalmente ayuda a que el usuario no necesite conocer los detalles de cómo funciona cada procedimiento y, de esta manera, exista una interfaz clara para el usuario.
+
+### reporter.ex
+
+Este módulo es responsable de construir los reportes de los archivos una vez que han sido procesados. Esto permite que este módulo simplemente se encargue de recibir las métricas obtenidas de los archivos procesados y construir el reporte a partir de ellas sin conocer cómo se obtuvieron dichas métricas ni todo lo que se tuvo que hacer para obtenerlas; simplemente las utiliza para construir un reporte.
+
+### secuential.ex
+
+Este módulo funciona como un coordinador para el procesamiento secuencial de archivos y directorios.
+
+Su función principal es recibir una ruta como entrada y ejecutar una serie de pasos (usando el operador pipe) encadenados que permiten validar la existencia de la ruta, identificar si corresponde a un archivo o a un directorio y, en el caso de los archivos, determinar su extensión.
+
+Con base en esta información, el módulo decide si debe delegar el procesamiento a un módulo handler específico de acuerdo con el tipo de archivo (.csv, .json o .log), procesar el contenido de un directorio de manera recursiva o devolver un error cuando la entrada es inválida o la extensión no es soportada.
+
+Este módulo actúa como un coordinador del flujo secuencial. Al igual que los otros módulos, es importante porque mantiene separada la responsabilidad de validar archivos de la lógica de parseo y obtención de métricas para cada tipo de archivo (.csv, .json, .log), la cual es manejada por otros módulos.
+
+### handlers
+
+Dentro de esta carpeta se encuentran los módulos responsables de manejar el flujo de procesamiento específico para cada tipo de archivo soportado por el proyecto (.csv, .json y .log).
+
+Cada uno de estos módulos es invocado desde (secuential.ex) una vez que la ruta ha sido validada y se ha determinado que el archivo tiene una extensión soportada. La responsabilidad de estos módulos no es realizar el procesamiento completo, sino nuevamente coordinar las diferentes etapas necesarias para un tipo de archivo específico.
+
+El flujo manejado por estos módulos es el siguiente:
+- Delegar el parseo del archivo al módulo parser correspondiente
+- Recibir las métricas generadas a partir del contenido del archivo
+- Construir el reporte usando el módulo Reporter
+- Guardar el reporte generado en texto plano
+
+Como antes, esta decisión se tomó para que, por ejemplo, si en el futuro un archivo necesita pasar por otro proceso, simplemente se pueda agregar otra función en cada uno de estos módulos llamando a un nuevo módulo que se encargue de esa nueva implementación y, de esta manera, el flujo de procesamiento se mantenga organizado.
+
+### parsers
+
+En esta carpeta se encuentran los módulos responsables de parsear los archivos soportados por el proyecto (.csv, .json y .log).
+
+Cada parser es responsable de leer y transformar el contenido del archivo en estructuras que puedan ser procesadas, así como de calcular todas las métricas solicitadas para ese tipo de archivo. Estas métricas se van acumulando y, una vez que el procesamiento ha finalizado, se devuelven como resultado.
+
+Nuevamente, esto es importante porque cada uno de estos módulos únicamente será responsable de leer y transformar los datos y producir las métricas necesarias, las cuales posteriormente serán utilizadas por los módulos handler para pasarlas al módulo encargado de construir el reporte.  
+De esta forma, si en el futuro se requieren nuevas métricas, únicamente estos módulos deberán ser modificados.
+
+### parallel/coordinator.ex
+
+Este módulo funciona como el coordinador para el procesamiento paralelo de archivos.  
+Su responsabilidad es organizar, lanzar y supervisar la ejecución concurrente de múltiples archivos utilizando procesos independientes.
+
+Por ejemplo:
+
+Cuando se recibe un directorio como entrada, el coordinador obtiene la lista de archivos contenidos en él (File.ls) y los transforma en rutas completas. Posteriormente, estos archivos son enviados a procesamiento paralelo utilizando el módulo Task que viene integrado en Elixir.
+
+Elegí Task porque proporciona una manera simple y segura de manejar concurrencia, permitiendo crear procesos sin la necesidad de manejar manualmente funciones como spawn, send y receive. Con cada llamada a Task.async/1 se crea un proceso y estas funciones se utilizan automáticamente, además de que cada proceso es responsable de procesar un archivo de manera aislada.
+
+Cada tarea, o digamos cada procedimiento de procesamiento de archivos, es delegada al módulo FileProcessor.Sequential, lo que permite reutilizar la misma lógica de procesamiento utilizada en el modo secuencial. Es decir, todo lo relacionado con la validación de la ruta y la obtención de detalles como la extensión. Esto garantiza consistencia, ya que ambos enfoques se manejan internamente de la misma manera y también evita la duplicación de código.
+
+El coordinador también es responsable de:
+- Recopilar los resultados de todas las tareas creadas
+- Manejar posibles errores o timeouts con Task.await/2
+- Mostrar un indicador de progreso en tiempo real conforme los archivos son procesados
+
+El uso de Task.await/2 con un límite de tiempo nos permite evitar casos en los que, por ejemplo, si un proceso falla o tarda demasiado en completarse, dicho proceso simplemente se termina y la ejecución continúa con los demás en lugar de quedarse bloqueada, lo que hace que todo sea más controlado.
+
+
+# FileProcessor CLI – Guía de Uso
+
+El ejecutable `FileProcessor` proporciona una interfaz de línea de comandos (CLI) que permite procesar archivos sin abrir IEx.
+
+Todos los comandos siguen la estructura general:
+
+./file_processor <command> <path> [options]
+
+Donde:
+- `<command>` es la operación a ejecutar
+- `<path>` es la ruta a un archivo o directorio
+- `[options]` son parámetros opcionales en formato `key=value`
+
+---
+
+## process_secuential
+
+Procesa un solo archivo, una lista de archivos o un directorio **de forma secuencial**.
+
+### Sintaxis
+
+./file_processor process_secuential <path>
+
+### Ejemplos
+
+Procesar un solo archivo:
+./file_processor process_secuential "data/valid/ventas_enero.csv"
+
+Procesar un directorio completo:
+./file_processor process_secuential "data/valid"
+
+## process_parallel 
+
+Procesa archivos en paralelo, utilizando múltiples procesos concurrentes.
+
+### Sintaxis
+
+./file_processor process_parallel <path> [key=value ...]
+
+### Opciones opcionales
+
+max_workers – Número máximo de procesos trabajadores concurrentes
+
+timeout – Tiempo máximo (en milisegundos) permitido por archivo
+
+
+### Ejemplos 
+
+Procesar un directorio usando opciones por defecto:
+./file_processor process_parallel "data/valid"
+
+Procesar un directorio con opciones personalizadas:
+./file_processor process_parallel "data/valid" max_workers=3 timeout=10000
+
+### Descripción
+
+Cada archivo es procesado en un proceso independiente utilizando el módulo Task de Elixir.
+Este modo mejora el rendimiento al manejar múltiples archivos.
+
+Las opciones deben proporcionarse sin corchetes, sin comas y utilizando el formato key=value.
+
+## benchmark
+
+Compara el tiempo de ejecución del procesamiento secuencial vs paralelo.
+
+### Sintaxis
+
+./file_processor benchmark <path>
+
+### Ejemplo
+
+./file_processor benchmark "data/valid"
+
+### Ejemplo de salida
+
+Secuential time : 15000  
+Parallel Time: 5000
+
+### Descripción
+
+Este comando ejecuta internamente ambos modos de procesamiento e imprime el tiempo de ejecución en microsegundos, permitiendo una comparación directa de rendimiento.
+
+## Comando de ayuda
+
+Muestra la información de uso del CLI.
+
+### Sintaxis
+
+./file_processor --help
+
+## Notas
+
+Todas las rutas se resuelven de manera relativa a la ubicación del ejecutable
+
+Si una ruta contiene espacios, debe ir entre comillas
+
+Las opciones solo son soportadas para process_parallel
+
+## Errores comunes y solución de problemas
+
+Esta sección describe errores comunes al usar el ejecutable FileProcessor
+y cómo solucionarlos.
+
+### 1. Usar corchetes para las opciones del CLI
+
+Incorrecto:
+./file_processor process_parallel "data/valid" [max_workers=3, timeout=10000]
+
+Correcto:
+./file_processor process_parallel "data/valid" max_workers=3 timeout=10000
+
+### 2. Usar comas entre opciones 
+
+Incorrecto:
+./file_processor process_parallel "data/valid" max_workers=3, timeout=10000
+
+Correcto:
+./file_processor process_parallel "data/valid" max_workers=3 timeout=10000
+
+### 3. Olvidar comillas en rutas con espacios
+
+Incorrecto:
+./file_processor process_secuential data/my files
+
+Correcto
+
+./file_processor process_secuential "data/my files"
+
+Siempre coloca las rutas entre comillas si contienen espacios.
+
+### 4. Ejecutar el ejecutable desde el directorio incorrecto
+
+Incorrecto:
+./file_processor process_secuential data/valid
+
+
+Correcto
+cd file_processor
+./file_processor process_secuential data/valid
+
+
+Todas las rutas relativas se resuelven desde el directorio donde se ejecuta el ejecutable.
+
+### 5. Olvidar permisos de ejecución
+
+Usar una extensión de archivo no soportada
+
+Incorrecto:
+./file_processor process_secuential "data/file.txt"
+
+Correcto:
+
+Extensiones soportadas:
+
+.csv
+
+.json
+
+.log
+
+Los archivos con extensiones no soportadas devolverán un mensaje de error.
+
+
+### 6. Pasar valores inválidos en las opciones
+
+Incorrecto:
+./file_processor process_parallel "data/valid" max_workers=abc
+
+Correcto:
+
+./file_processor process_parallel "data/valid" max_workers=4
+
+Las opciones numéricas deben contener valores enteros válidos.
+
+### 7. Mezclar el uso de IEx con el uso del CLI
+
+Correcto(CLI):
+./file_processor process_secuential "data/valid"
+
+Correcto(IEx):
+FileProcessor.process_secuential("data/valid")
+
+
+
+
+
+
+
+
+
 # File Processor - File Processing in Elixir 
 
 # Description

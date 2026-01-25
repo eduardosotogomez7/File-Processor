@@ -1,4 +1,11 @@
 defmodule FileProcessor.Sequential do
+
+  # Esta primera funcion nos indica el flujo de trabajo que va a tener cualquier path que nos llegue por parámetro
+  # Aqui nos vamos a encargar de ver si el path no es una cadena vacía, verificar si existe
+  # Obentener detalles como pueden ser la extension o si es directorio, lista de archivos o un solo path
+  # y finalmente obtener el reporte
+  # Cada uno de los pasos de esta funcion devuelve un valor el cual ayuda al sigiente paso del flujo tomar decisiones
+  # Entonces tanto los resultados como los errores se van propagando
   def process(path) when is_bitstring(path) do
     case String.trim(path) do
       "" ->
