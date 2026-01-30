@@ -12,6 +12,8 @@ defmodule FileProcessor.Handler.CSV do
   and reporter components for CSV files.
   """
 
+  # Comentario agregado 30/01/2026
+
   # Basicamente esta funcion es llamada desde el archivo sequential.ex o el coordinator.ex
   # Ayuda principalemte ya que accedemos a ella una vez que sabemos que nuestra ruta del archivo a procesar es
   # una ruta válida, es una ruta con extension csv, entonces con esta funcion simplemente empezamos
