@@ -174,47 +174,7 @@ defmodule FileProcessor.CLI do
     """)
   end
 
-  defp parse_options(args) do
-    Enum.reduce(args, %{}, fn arg, acc ->
-      case String.split(arg, "=", parts: 2) do
-        [key, value] ->
-          Map.put(acc, String.to_atom(key), parse_value(value))
 
-        _ ->
-          acc
-      end
-    end)
-  end
-
-  defp parse_value(value) do
-    case Integer.parse(value) do
-      {int, ""} -> int
-      _ -> value
-    end
-  end
-
-  # Esta funcion nos ayuda a que dadas las entradas de un usuario poder identificar de ellas cuales son rutas de archivos y cuales son opciones
-  # como max_workers y timeout, para eso tomamos los argumentos enviados por el usuario y si en alguno de ellos está el simbolo "=" se infiere
-  # que ese argumento corresponde a una opcion (max_workers o tiomeout)
-  # El valor de retorno es una tupla con dos listas, una que va a corresponer a los paths y otra que va a corresponder a las opciones
-  defp split_paths_and_options(args) do
-    Enum.split_with(args, fn arg ->
-      not String.contains?(arg, "=")
-    end)
-  end
-
-
-  # Esta funcion nos ayuda a verificar que las opcioones (max_workers y timeout) ingresadas por el usuario sean válidas
-  defp validate_options(opts) do
-    {valid, invalid} =
-      Enum.split_with(opts, fn
-        {:max_workers, v} when is_integer(v) and v > 0 -> true
-        {:timeout, v} when is_integer(v) and v >= 0 -> true
-        _ -> false
-      end)
-
-    {Map.new(valid), invalid}
-  end
 
 
   #Al procesar un archivo obtenemos de resultado un atupla con la informacion necesaria para dar un resultado al usuario, esta función se encarga
@@ -261,5 +221,51 @@ defmodule FileProcessor.CLI do
       list when is_list(list) ->
         Enum.each(list, fn x -> IO.puts(print_result(x)) end)
     end
+  end
+
+
+  #-------------------------------------------------------------------------------------------------
+  #                Funciones auxiliares para procesamiento paralelo con opciones
+  #-----------------------------------------------------------------------------------------------------
+  defp parse_options(args) do
+    Enum.reduce(args, %{}, fn arg, acc ->
+      case String.split(arg, "=", parts: 2) do
+        [key, value] ->
+          Map.put(acc, String.to_atom(key), parse_value(value))
+
+        _ ->
+          acc
+      end
+    end)
+  end
+
+  defp parse_value(value) do
+    case Integer.parse(value) do
+      {int, ""} -> int
+      _ -> value
+    end
+  end
+
+  # Esta funcion nos ayuda a que dadas las entradas de un usuario poder identificar de ellas cuales son rutas de archivos y cuales son opciones
+  # como max_workers y timeout, para eso tomamos los argumentos enviados por el usuario y si en alguno de ellos está el simbolo "=" se infiere
+  # que ese argumento corresponde a una opcion (max_workers o tiomeout)
+  # El valor de retorno es una tupla con dos listas, una que va a corresponer a los paths y otra que va a corresponder a las opciones
+  defp split_paths_and_options(args) do
+    Enum.split_with(args, fn arg ->
+      not String.contains?(arg, "=")
+    end)
+  end
+
+
+  # Esta funcion nos ayuda a verificar que las opcioones (max_workers y timeout) ingresadas por el usuario sean válidas
+  defp validate_options(opts) do
+    {valid, invalid} =
+      Enum.split_with(opts, fn
+        {:max_workers, v} when is_integer(v) and v > 0 -> true
+        {:timeout, v} when is_integer(v) and v >= 0 -> true
+        _ -> false
+      end)
+
+    {Map.new(valid), invalid}
   end
 end
