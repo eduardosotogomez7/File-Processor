@@ -71,6 +71,20 @@ defmodule FileProcessor.Sequential do
     end
   end
 
+
+  # Obtiene información básica del path validado previamente.
+  #
+  # Esta función recibe el resultado de fileExists?/1 y decide
+  # cómo continuar el flujo según el tipo de path.
+  #
+  # Casos:
+  # - Si recibe {:error, _}, propaga el error sin modificarlo.
+  # - Si recibe {:ok, path}:
+  #   - Retorna {:file, extension, path} si el path es un archivo regular.
+  #   - Retorna {:dir, path} si el path es un directorio.
+  #
+  # Esta información es utilizada posteriormente para decidir
+  # qué tipo de procesamiento se debe aplicar (archivo o directorio).
   defp obtainDetails({:error, _} = error) do
     error
   end
