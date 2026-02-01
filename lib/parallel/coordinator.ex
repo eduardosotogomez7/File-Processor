@@ -14,6 +14,10 @@ defmodule FileProcessor.Parallel.Coordinator do
   controlling concurrency, timeouts, and execution flow.
   """
 
+  # Processes a single path.
+  # - If the path is a file, it is processed directly.
+  # - If the path is a directory, its contents are resolved and processed.
+  # - Returns appropriate errors for empty directories or invalid paths.
   def process_directory(path) when is_bitstring(path) do
     cond do
       File.regular?(path) ->
