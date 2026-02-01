@@ -96,6 +96,17 @@ defmodule FileProcessor.Sequential do
     end
   end
 
+
+  # Genera el reporte correspondiente según el tipo de recurso recibido.
+  #
+  # Esta función es responsable de:
+  # - Delegar el procesamiento de archivos a su handler correspondiente
+  #   según la extensión (.csv, .json, .log).
+  # - Manejar directorios recorriendo su contenido de forma recursiva.
+  # - Propagar errores cuando el flujo previo falla.
+  #
+  # Recibe como entrada una tupla generada por obtainDetails/1
+  # y devuelve el resultado final del procesamiento.
   defp obtainReport({:file, ".csv", path}) do
     case FileProcessor.Handler.CSV.process(path) do
       {:ok, final_path} -> {:ok, :csv, final_path}
