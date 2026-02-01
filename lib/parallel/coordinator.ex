@@ -42,6 +42,9 @@ defmodule FileProcessor.Parallel.Coordinator do
     end
   end
 
+  # Processes a directory using parallel execution options.
+  # Expects options to be a map containing max_workers and timeout settings.
+  # Delegates file processing to process_files/2.
   def process_directory(path, options) when is_map(options) do
     case File.ls(path) do
       {:ok, files} ->
@@ -122,11 +125,11 @@ defmodule FileProcessor.Parallel.Coordinator do
   end
 
   defp notify_progress(message) do
-  case Application.get_env(:file_processor, :show_progress, false) do
-    true -> IO.puts(message)
-    false -> :ok
+    case Application.get_env(:file_processor, :show_progress, false) do
+      true -> IO.puts(message)
+      false -> :ok
+    end
   end
-end
 
   defp normalize_options(options) do
     max_workers =
