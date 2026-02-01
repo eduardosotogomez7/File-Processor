@@ -107,6 +107,11 @@ defmodule FileProcessor.Sequential do
   #
   # Recibe como entrada una tupla generada por obtainDetails/1
   # y devuelve el resultado final del procesamiento.
+
+
+  # Maneja el procesamiento de archivos CSV.
+  # Llama al handler correspondiente y normaliza la respuesta
+  # para mantener un formato de salida consistente.
   defp obtainReport({:file, ".csv", path}) do
     case FileProcessor.Handler.CSV.process(path) do
       {:ok, final_path} -> {:ok, :csv, final_path}
@@ -115,6 +120,8 @@ defmodule FileProcessor.Sequential do
     end
   end
 
+  # Maneja el procesamiento de archivos JSON.
+  # Delegando el flujo al handler JSON y retornando el estado final.
   defp obtainReport({:file, ".json", path}) do
     case FileProcessor.Handler.JSON.process(path) do
       {:ok, final_path} -> {:ok, :json, final_path}
@@ -123,6 +130,9 @@ defmodule FileProcessor.Sequential do
     end
   end
 
+  # Maneja el procesamiento de archivos LOG.
+  # Este tipo de archivo se procesa con métricas específicas
+  # relacionadas con niveles y patrones de error.
   defp obtainReport({:file, ".log", path}) do
     case FileProcessor.Handler.LOG.process(path) do
       {:ok, final_path} -> {:ok, :log, final_path}
@@ -135,6 +145,11 @@ defmodule FileProcessor.Sequential do
     {:error, "Extension not allowed", path}
   end
 
+
+  # Maneja el procesamiento de directorios.
+  # Si el directorio está vacío se retorna una advertencia,
+  # de lo contrario se inicia el procesamiento recursivo
+  # de su contenido
   defp obtainReport({:dir, path}) do
     case File.ls(path) do
       {:ok, []} ->
