@@ -26,7 +26,6 @@ defmodule FileProcessor.Parser.JSONTest do
 
       assert result.state == :partial
       assert length(result.errors) > 0
-
     end
   end
 
@@ -47,6 +46,4 @@ defmodule FileProcessor.Parser.JSONTest do
       assert length(result.errors) == 1
     end
   end
-
-
 end

@@ -1,5 +1,4 @@
 defmodule FileProcessor.Sequential do
-
   # Esta primera funcion nos indica el flujo de trabajo que va a tener cualquier path que nos llegue por parámetro
   # Aqui nos vamos a encargar de ver si el path no es una cadena vacía, verificar si existe
   # Obentener detalles como pueden ser la extension o si es directorio, lista de archivos o un solo path
@@ -64,13 +63,11 @@ defmodule FileProcessor.Sequential do
   end
 
   defp obtainReport({:file, ".json", path}) do
-
     case FileProcessor.Handler.JSON.process(path) do
       {:ok, final_path} -> {:ok, :json, final_path}
       {:partial, _} -> {:partial, :json, path}
       {:error, _} -> {:error, :json, path}
     end
-
   end
 
   defp obtainReport({:file, ".log", path}) do
@@ -90,13 +87,9 @@ defmodule FileProcessor.Sequential do
       {:ok, []} ->
         {:warning, "The directory is empty"}
 
-        {:ok, _} ->
-          process_directory(path)
-      end
-
-
-
-
+      {:ok, _} ->
+        process_directory(path)
+    end
   end
 
   defp obtainReport({:error, _} = error) do
@@ -113,8 +106,12 @@ defmodule FileProcessor.Sequential do
         |> Enum.map(fn x -> Path.join(path, x) end)
         |> Enum.map(fn file ->
           cond do
-            File.regular?(file) -> process(file)
-            File.dir?(file) -> process_directory(file)
+            File.regular?(file) ->
+              process(file)
+
+            File.dir?(file) ->
+              process_directory(file)
+
             true ->
               {:error, "Unsoported file type: #{file}"}
           end

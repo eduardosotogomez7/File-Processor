@@ -12,9 +12,7 @@ defmodule FileProcessor.SequentialTest do
 
     File.mkdir_p!(tmp_dir)
 
-
     txt = Path.join(tmp_dir, "test.txt")
-
 
     File.write!(txt, "invalid")
 
@@ -66,12 +64,12 @@ defmodule FileProcessor.SequentialTest do
   end
 
   test "process/1 processes json file" do
-    assert {:ok, :json,_} =
+    assert {:ok, :json, _} =
              Sequential.process("data/valid/usuarios.json")
   end
 
   test "process/1 processes log file" do
-    assert {:ok, :log,_} =
+    assert {:ok, :log, _} =
              Sequential.process("data/valid/sistema.log")
   end
 
@@ -90,13 +88,10 @@ defmodule FileProcessor.SequentialTest do
   end
 
   test "process/1 processes directory with files" do
-  result = Sequential.process("data/valid")
+    result = Sequential.process("data/valid")
 
-  assert is_list(result)
-
-
-end
-
+    assert is_list(result)
+  end
 
   # ---------------------------------------------------------
   # List handling
@@ -107,7 +102,7 @@ end
              Sequential.process([])
   end
 
-  test "process/1 processes list of files"do
+  test "process/1 processes list of files" do
     result = Sequential.process(["data/valid/ventas_enero.csv", "data/valid/usuarios.json"])
 
     assert is_list(result)

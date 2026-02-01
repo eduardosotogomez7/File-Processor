@@ -45,7 +45,5 @@ defmodule FileProcessor.Parser.CSVTest do
     test "returns error when file does not exist" do
       assert {:error, _reason} = CSV.parse("data/valid/no_existe.csv")
     end
-
-
   end
 end

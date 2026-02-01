@@ -23,9 +23,9 @@ defmodule FileProcessor do
       metrics, state, and errors of the processed file.
   """
   def process_secuential(path) do
-    FileProcessor.Sequential.process(path) # Aqui mandamos a llamar a la funcion process que esta en el archivo sequential.ex
+    # Aqui mandamos a llamar a la funcion process que esta en el archivo sequential.ex
+    FileProcessor.Sequential.process(path)
   end
-
 
   @doc """
   Processes all files in a directory or a list of files in parallel using the default options.
@@ -37,15 +37,14 @@ defmodule FileProcessor do
     - A report of results for each processed file.
   """
   def process_parallel(path) when is_bitstring(path) do
-    FileProcessor.Parallel.Coordinator.process_directory(path) # Aqui mandamos a llamar a la funcion process_directory que esta en parallel/coordinator.ex
+    # Aqui mandamos a llamar a la funcion process_directory que esta en parallel/coordinator.ex
+    FileProcessor.Parallel.Coordinator.process_directory(path)
   end
-
-
 
   def process_parallel(files) when is_list(files) do
-    FileProcessor.Parallel.Coordinator.process_files(files) # Aqui mandamos a llamar a la funcion process_files que esta en parallel/coordinator.ex
+    # Aqui mandamos a llamar a la funcion process_files que esta en parallel/coordinator.ex
+    FileProcessor.Parallel.Coordinator.process_files(files)
   end
-
 
   @doc """
   Processes all files in a directory in parallel using custom options.
@@ -60,14 +59,16 @@ defmodule FileProcessor do
     - A list of results for each processed file, using the specified options.
   """
   def process_parallel(path, options) when is_bitstring(path) and is_map(options) do
-  FileProcessor.Parallel.Coordinator.process_directory(path, options) # Aqui mandamos a llamar a la funcion process_directory que esta en parallel/coordinator.ex
-end
+    # Aqui mandamos a llamar a la funcion process_directory que esta en parallel/coordinator.ex
+    FileProcessor.Parallel.Coordinator.process_directory(path, options)
+  end
 
-def process_parallel(path,options) when is_list(path) and is_map(options) do
-  FileProcessor.Parallel.Coordinator.process_files(path,options) # Aqui mandamos a llamar a la funcion process_files que esta en parallel/coordinator.ex
-end
+  def process_parallel(path, options) when is_list(path) and is_map(options) do
+    # Aqui mandamos a llamar a la funcion process_files que esta en parallel/coordinator.ex
+    FileProcessor.Parallel.Coordinator.process_files(path, options)
+  end
 
-@doc """
+  @doc """
   Benchmarks the processing of files in a given path, comparing sequential vs parallel execution.
 
   ## Parameters
@@ -82,16 +83,16 @@ end
       Secuential time : 15000
       Parallel Time: 5000
   """
-def benchmark(path) do
-  {secuential_time, _} = :timer.tc(fn -> process_secuential(path) end)
+  def benchmark(path) do
+    {secuential_time, _} = :timer.tc(fn -> process_secuential(path) end)
 
-  {parallel_time, _} = :timer.tc(fn -> process_parallel(path) end)
+    {parallel_time, _} = :timer.tc(fn -> process_parallel(path) end)
 
-  IO.puts("""
+    IO.puts("""
 
-    Secuential time : #{secuential_time / 1000} milliSeconds
-    Parallel Time: #{parallel_time / 1000} milliSeconds
+      Secuential time : #{secuential_time / 1000} milliSeconds
+      Parallel Time: #{parallel_time / 1000} milliSeconds
 
-  """)
-end
+    """)
+  end
 end

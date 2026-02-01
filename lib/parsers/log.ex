@@ -27,7 +27,6 @@ defmodule FileProcessor.Parser.LOG do
   - Recurrent error keyword patterns
   """
 
-
   # En esta funcion parse es donde está todo el flujo de trabajo que va a recibir un archivo log
   # que va desde hacer el parse correcto, obtener lineas válidas e inválidas y hasta oobtener las métricas
   # Una vez realizado el proceso y dependiendo del caso, tendremos tres posibles retornos de la funcion

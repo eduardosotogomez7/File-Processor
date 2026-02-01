@@ -50,7 +50,6 @@ defmodule FileProcessor.Parser.CSV do
   This module does not perform any file output; it only parses and analyzes data.
   """
 
-
   # En esta funcion parse es donde está todo el flujo de trabajo que va a recibir un archivo csv
   # que va desde hacer el parse correcto, obtener lineas válidas e inválidas y hasta oobtener las métricas
   # Una vez realizado el proceso y dependiendo del caso, tendremos tres posibles retornos de la funcion

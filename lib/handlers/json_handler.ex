@@ -12,7 +12,6 @@ defmodule FileProcessor.Handler.JSON do
   error logging, and report generation components.
   """
 
-
   # Basicamente esta funcion es llamada desde el archivo sequential.ex o el coordinator.ex
   # Ayuda principalemte ya que accedemos a ella una vez que sabemos que nuestra ruta del archivo a procesar es
   # una ruta válida, es una ruta con extension json, entonces con esta funcion simplemente empezamos
@@ -29,13 +28,15 @@ defmodule FileProcessor.Handler.JSON do
       {:partial, errors} ->
         FileProcessor.ErrorLogger.log_errors(
           %{extension: :json, filename: path},
-          errors.errors, errors.state
+          errors.errors,
+          errors.state
         )
 
       {:error, errors} ->
         FileProcessor.ErrorLogger.log_errors(
           %{extension: :json, filename: path},
-          errors.errors, errors.state
+          errors.errors,
+          errors.state
         )
     end
   end

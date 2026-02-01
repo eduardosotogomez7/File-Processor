@@ -30,16 +30,16 @@ defmodule FileProcessor.Handler.CSV do
       {:partial, errors} ->
         FileProcessor.ErrorLogger.log_errors(
           %{extension: :csv, filename: path},
-          errors.errors, errors.state
+          errors.errors,
+          errors.state
         )
 
       {:error, errors} ->
         FileProcessor.ErrorLogger.log_errors(
           %{extension: :csv, filename: path},
-          errors.errors, errors.state
+          errors.errors,
+          errors.state
         )
-
-
     end
   end
 end

@@ -28,11 +28,10 @@ defmodule FileProcessor.Parser.LOGTest do
       assert result.errors != []
 
       assert is_list(result.errors)
+
       assert Enum.all?(result.errors, fn {line, reason} ->
-        is_integer(line) and reason == :invalid_log_format
-      end)
-
-
+               is_integer(line) and reason == :invalid_log_format
+             end)
     end
   end
 
@@ -43,8 +42,6 @@ defmodule FileProcessor.Parser.LOGTest do
       assert result.state == :error
       assert result.errors != []
     end
-
-
   end
 
   describe "metrics structure contracts" do
