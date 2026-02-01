@@ -52,6 +52,18 @@ defmodule FileProcessor.Sequential do
     {:error, "Invalid input. Expected a file path as a string or a list of file paths."}
   end
 
+
+  # Verifica la existencia de un archivo o directorio en el sistema.
+  #
+  # Recibe un path como cadena y utiliza File.exists?/1 para validar
+  # si dicho path existe en el sistema de archivos.
+  #
+  # Retorna:
+  # - {:ok, path} si el archivo o directorio existe.
+  # - {:error, "File not found"} si el path no existe.
+  #
+  # Esta función es utilizada como primer filtro dentro del flujo
+  # de procesamiento para evitar operaciones sobre paths inválidos.
   defp fileExists?(path) do
     case File.exists?(path) do
       true -> {:ok, path}
