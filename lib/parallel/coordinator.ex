@@ -1,4 +1,5 @@
 defmodule FileProcessor.Parallel.Coordinator do
+  @default_timeout 5_000
   @moduledoc """
   Coordinator module responsible for parallel file and directory processing.
 
@@ -139,7 +140,6 @@ defmodule FileProcessor.Parallel.Coordinator do
     end
   end
 
-
   # Normalizes parallel execution options.
   # Ensures valid values for max_workers and timeout,
   # falling back to sensible defaults when needed.
@@ -159,7 +159,7 @@ defmodule FileProcessor.Parallel.Coordinator do
           value
 
         _ ->
-          5_000
+          @default_timeout
       end
 
     %{max_workers: max_workers, timeout: timeout}
