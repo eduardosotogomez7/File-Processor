@@ -101,6 +101,9 @@ defmodule FileProcessor.Parallel.Coordinator do
   end
 
 
+  # Processes a list of files using Task.async_stream/3.
+  # Allows control over max_workers and execution timeout.
+  # Progress is reported based on the file index being processed
   def process_files(files, options) when is_list(files) do
     %{max_workers: max_workers, timeout: timeout} =
       normalize_options(options)
