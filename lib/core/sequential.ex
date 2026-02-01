@@ -18,10 +18,21 @@ defmodule FileProcessor.Sequential do
     end
   end
 
+
+  # Maneja el caso en el que se recibe una lista vacía.
+  #
+  # Se considera una advertencia ya que no hay archivos para procesar,
+  # pero no representa un error de ejecución.
   def process([]) do
     {:warning, "No files to process"}
   end
 
+
+  # Maneja el caso en el que se recibe una lista de paths.
+  #
+  # Primero valida que todos los elementos de la lista sean cadenas.
+  # Si la validación es correcta, procesa cada path de forma individual
+  # reutilizando la función process/1
   def process(files) when is_list(files) do
     case Enum.all?(files, &is_bitstring/1) do
       true ->
@@ -32,6 +43,11 @@ defmodule FileProcessor.Sequential do
     end
   end
 
+
+  # Cláusula de seguridad para cualquier tipo de entrada no válida.
+  #
+  # Evita fallos inesperados y proporciona un mensaje de error claro
+  # cuando el tipo de dato recibido no es soportado.
   def process(_) do
     {:error, "Invalid input. Expected a file path as a string or a list of file paths."}
   end
