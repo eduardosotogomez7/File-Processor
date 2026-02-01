@@ -58,8 +58,6 @@ defmodule FileProcessor.Parallel.Coordinator do
     {:error, "Options must be a map"}
   end
 
-
-
   # Processes a list of files in parallel using Task.async/await.
   # Validates file paths before processing and reports progress.
   # Handles timeouts and task failures gracefully.
@@ -100,7 +98,6 @@ defmodule FileProcessor.Parallel.Coordinator do
     end
   end
 
-
   # Processes a list of files using Task.async_stream/3.
   # Allows control over max_workers and execution timeout.
   # Progress is reported based on the file index being processed
@@ -133,6 +130,8 @@ defmodule FileProcessor.Parallel.Coordinator do
     end)
   end
 
+  # Prints progress messages only if the :show_progress flag is enabled.
+  # This allows silent execution when progress reporting is disabled.
   defp notify_progress(message) do
     case Application.get_env(:file_processor, :show_progress, false) do
       true -> IO.puts(message)
@@ -140,6 +139,10 @@ defmodule FileProcessor.Parallel.Coordinator do
     end
   end
 
+
+  # Normalizes parallel execution options.
+  # Ensures valid values for max_workers and timeout,
+  # falling back to sensible defaults when needed.
   defp normalize_options(options) do
     max_workers =
       case Map.get(options, :max_workers) do
