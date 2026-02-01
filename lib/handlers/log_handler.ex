@@ -1,4 +1,5 @@
 defmodule FileProcessor.Handler.LOG do
+  alias FileProcessor.Parser.LOG, as: LOGParser
   @moduledoc """
   Handler module responsible for processing LOG files.
 
@@ -20,7 +21,7 @@ defmodule FileProcessor.Handler.LOG do
   # parsers/log.ex, esa funcion nos va a devolver un resultado y depende de cual sea vamos a mandar a llamar a la
   # generacion del reporte o a la generacion de un archivo con el log de errores
   def process(path) do
-    case FileProcessor.Parser.LOG.parse(path) do
+    case LOGParser.parse(path) do
       {:ok, result} ->
         report = FileProcessor.Reporter.buil_report(:log, path, result)
         FileProcessor.Reporter.save_report(:log, path, report)

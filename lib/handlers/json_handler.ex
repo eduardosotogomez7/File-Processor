@@ -1,4 +1,5 @@
 defmodule FileProcessor.Handler.JSON do
+  alias FileProcessor.Parser.JSON, as: JSONParser
   @moduledoc """
   Handler module responsible for processing JSON files.
 
@@ -20,7 +21,7 @@ defmodule FileProcessor.Handler.JSON do
   # parsers/json.ex, esa funcion nos va a devolver un resultado y depende de cual sea vamos a mandar a llamar a la
   # generacion del reporte o a la generacion de un archivo con el log de errores
   def process(path) do
-    case FileProcessor.Parser.JSON.parse(path) do
+    case JSONParser.parse(path) do
       {:ok, result} ->
         report = FileProcessor.Reporter.buil_report(:json, path, result)
         FileProcessor.Reporter.save_report(:json, path, report)

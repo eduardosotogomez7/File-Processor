@@ -1,4 +1,5 @@
 defmodule FileProcessor.Handler.CSV do
+  alias FileProcessor.Parser.CSV, as: CSVParser
   @moduledoc """
   Handler module responsible for processing CSV files.
 
@@ -21,8 +22,10 @@ defmodule FileProcessor.Handler.CSV do
   # obtener todas las metricas, esto se hace llamando a la funcion parse que se encuentra en
   # parsers/csv.ex, esa funcion nos va a devolver un resultado y depende de cual sea vamos a mandar a llamar a la
   # generacion del reporte o a la generacion de un archivo con el log de errores
+
+
   def process(path) do
-    case FileProcessor.Parser.CSV.parse(path) do
+    case CSVParser.parse(path) do
       {:ok, result} ->
         report = FileProcessor.Reporter.buil_report(:csv, path, result)
         FileProcessor.Reporter.save_report(:csv, path, report)
