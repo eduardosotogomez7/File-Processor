@@ -58,6 +58,11 @@ defmodule FileProcessor.Parallel.Coordinator do
     {:error, "Options must be a map"}
   end
 
+
+
+  # Processes a list of files in parallel using Task.async/await.
+  # Validates file paths before processing and reports progress.
+  # Handles timeouts and task failures gracefully.
   def process_files(files) when is_list(files) do
     case length(files) do
       0 ->
@@ -94,6 +99,7 @@ defmodule FileProcessor.Parallel.Coordinator do
         end
     end
   end
+
 
   def process_files(files, options) when is_list(files) do
     %{max_workers: max_workers, timeout: timeout} =
